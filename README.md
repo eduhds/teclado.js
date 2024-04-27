@@ -8,14 +8,14 @@
 
 Simple template for JS/TS lib.
 
-[Documentação](https://<username>.github.io/<repository>)
+[Documentação](https://eduhds.github.io/<teclado.js>)
 
 ## Instalação
 
 ```sh
-npm i username/repository
-yarn add username/repository
-pnpm add username/repository
+npm i eduhds/teclado.js
+yarn add eduhds/teclado.js
+pnpm add eduhds/teclado.js
 ```
 
 ## Desenvolvimento

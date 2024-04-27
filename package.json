@@ -1,5 +1,5 @@
 {
-  "name": "@username/repository",
+  "name": "@eduhds/teclado.js",
   "version": "1.0.0",
   "description": "",
   "main": "./lib/cjs/index.js",
@@ -15,17 +15,17 @@
     "docs": "typedoc --out docs src",
     "build": "pnpm run tsc && pnpm run docs && npx changelogen --output --bump"
   },
-  "repository": {
+  "teclado.js": {
     "type": "git",
-    "url": "git+https://github.com/username/repository.git"
+    "url": "git+https://github.com/eduhds/teclado.js.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/username/repository/issues"
+    "url": "https://github.com/eduhds/teclado.js/issues"
   },
-  "homepage": "https://github.com/username/repository#readme",
+  "homepage": "https://github.com/eduhds/teclado.js#readme",
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.7",
