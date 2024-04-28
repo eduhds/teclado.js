@@ -1,3 +1,3 @@
-import { sayHello } from './example';
+import { teclado } from './teclado.js';
 
-export { sayHello };
+export { teclado };

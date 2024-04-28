@@ -111,34 +111,40 @@ const KEYBOARD_KEYS = [
   ['_', 'Underscore']
 ];
 
+const ALPHABET_KEY = 'ABC';
+const NUMERIC_KEY = '?123';
+const NUMBERPAD_KEY = '1234';
+const SYMBOL_KEY = '=/<';
+
 const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n) || [n, n];
 
 const alphabetPreset = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
   ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
-  ['?123', ',', ' ', '.', 'Enter']
+  [NUMERIC_KEY, ',', ' ', '.', 'Enter']
 ].map(line => line.map(findKey));
 
 const numericPreset = [
   ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
   ['@', '#', '$', '_', '&', '-', '+', '(', ')', '/'],
-  ['=/<', '*', '"', "'", ':', ';', '!', '?', 'Backspace'],
-  ['ABC', ',', '1234', ' ', '.', 'Enter']
+  [SYMBOL_KEY, '*', '"', "'", ':', ';', '!', '?', 'Backspace'],
+  [ALPHABET_KEY, ',', NUMBERPAD_KEY, ' ', '.', 'Enter']
 ].map(line => line.map(findKey));
 
 const numpadPreset = [
-  ['7', '8', '9'],
-  ['4', '5', '6'],
-  ['1', '2', '3'],
-  ['0', '.', 'Enter']
+  //['/', '*', '-', '+'],
+  ['1', '2', '3', ALPHABET_KEY],
+  ['4', '5', '6', SYMBOL_KEY],
+  ['7', '8', '9', 'Backspace'],
+  ['.', '0', ',', 'Enter']
 ].map(line => line.map(findKey));
 
 const symbolPreset = [
   ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
   ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  ['?123', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  ['ABC', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
+  [NUMERIC_KEY, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+  [ALPHABET_KEY, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
 ].map(line => line.map(findKey));
 
 let focusedElementId: string;
@@ -159,31 +165,15 @@ type TecladoOptions = {
   preset?: 'alphabet' | 'numeric' | 'numpad' | 'symbol';
 };
 
-export function teclado(options: TecladoOptions = {}) {
-  if (!customOptions) {
-    customOptions = options;
+function buildContent(preset: any) {
+  const ctn = document.getElementById('teclado-content');
+  if (ctn) {
+    ctn.parentElement?.removeChild(ctn);
   }
-
-  const keyboard = document.getElementById(KEYBOARD_ID);
-
-  if (keyboard) {
-    keyboard.parentNode?.removeChild(keyboard);
-  }
-
-  // Container element
-  const container = document.createElement('div');
-  container.id = KEYBOARD_ID;
-  container.style.position = 'fixed';
-  container.style.bottom = '0px';
-  container.style.left = '0px';
-  container.style.right = '0px';
-  container.style.display = 'none';
-  container.style.zIndex = '9999';
-  container.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-  container.style.padding = '10px';
 
   // Content element
   const content = document.createElement('div');
+  content.id = 'teclado-content';
   content.style.display = 'flex';
   content.style.flexDirection = 'column';
   content.style.justifyContent = 'center';
@@ -191,7 +181,8 @@ export function teclado(options: TecladoOptions = {}) {
 
   const buttonsIds = [];
   const presets = { alphabetPreset, numericPreset, numpadPreset, symbolPreset };
-  const keyboardPreset = presets[options.preset ? `${options.preset}Preset` : 'alphabetPreset'];
+  // @ts-ignore
+  const keyboardPreset = presets[preset ? `${preset}Preset` : 'alphabetPreset'];
 
   for (const lineKeys of keyboardPreset) {
     // Line element
@@ -218,7 +209,12 @@ export function teclado(options: TecladoOptions = {}) {
       button.style.justifyContent = 'center';
       button.style.cursor = 'pointer';
 
-      if (key === 'Backspace' || key === 'Enter' || key === 'Shift') {
+      if (
+        key === 'Backspace' ||
+        key === 'Enter' ||
+        key === 'Shift' ||
+        [ALPHABET_KEY, NUMERIC_KEY, SYMBOL_KEY, NUMBERPAD_KEY].includes(key)
+      ) {
         button.style.width = '6rem';
         button.style.fontSize = '1rem';
       }
@@ -227,24 +223,22 @@ export function teclado(options: TecladoOptions = {}) {
         button.style.width = '14rem';
       }
 
-      button.addEventListener('click', _ => {
-        if (key === '?123') {
-          teclado({ ...customOptions, preset: 'numeric' });
-          return;
-        }
-
-        if (key === 'ABC') {
-          teclado({ ...customOptions, preset: 'alphabet' });
-          return;
-        }
-
-        if (key === '1234') {
-          teclado({ ...customOptions, preset: 'numpad' });
-          return;
-        }
-
-        if (key === '=/<') {
-          teclado({ ...customOptions, preset: 'symbol' });
+      button.addEventListener('click', e => {
+        if ([NUMERIC_KEY, NUMBERPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
+          const ctn = buildContent(
+            key === NUMERIC_KEY
+              ? 'numeric'
+              : key === NUMBERPAD_KEY
+              ? 'numpad'
+              : key === SYMBOL_KEY
+              ? 'symbol'
+              : 'alphabet'
+          );
+          const keyboard = document.getElementById(KEYBOARD_ID);
+          if (keyboard) {
+            keyboard.appendChild(ctn);
+          }
+          e.stopPropagation();
           return;
         }
 
@@ -259,6 +253,7 @@ export function teclado(options: TecladoOptions = {}) {
 
         keyClicked = true;
         document.dispatchEvent(event);
+        e.stopPropagation();
       });
 
       line.appendChild(button);
@@ -269,6 +264,34 @@ export function teclado(options: TecladoOptions = {}) {
     content.appendChild(line);
   }
 
+  return content;
+}
+
+export function teclado(options: TecladoOptions = {}) {
+  if (!customOptions) {
+    customOptions = options;
+  }
+
+  const keyboard = document.getElementById(KEYBOARD_ID);
+
+  if (keyboard) {
+    keyboard.parentNode?.removeChild(keyboard);
+  }
+
+  // Container element
+  const container = document.createElement('div');
+  container.id = KEYBOARD_ID;
+  container.style.position = 'fixed';
+  container.style.bottom = '0px';
+  container.style.left = '0px';
+  container.style.right = '0px';
+  container.style.display = 'none';
+  container.style.zIndex = '9999';
+  container.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+  container.style.padding = '10px';
+
+  const content = buildContent(options.preset);
+
   container.appendChild(content);
 
   document.body.appendChild(container);
@@ -278,17 +301,17 @@ export function teclado(options: TecladoOptions = {}) {
     const input = document.getElementById(focusedElementId);
 
     if (keyboard && input) {
-      const isClickInsideInput = input?.contains(event.target);
-      const isClickedInsideKeyboard = keyboard?.contains(event.target);
+      const isClickInsideInput = input?.contains(event.target as HTMLElement);
+      const isClickedInsideKeyboard = keyboard?.contains(event.target as HTMLElement);
 
       if (!isClickInsideInput && !isClickedInsideKeyboard) {
         input.blur();
         hideKeyboard();
-        focusedElementId = null;
+        focusedElementId = '';
       }
     } else {
       hideKeyboard();
-      focusedElementId = null;
+      focusedElementId = '';
     }
   });
 
@@ -303,6 +326,7 @@ export function teclado(options: TecladoOptions = {}) {
     if (input) {
       switch (event.key) {
         case 'Backspace':
+          // @ts-ignore
           changeHandlers[focusedElementId]?.(input.value.slice(0, -1));
           break;
         case 'Delete':
@@ -312,13 +336,14 @@ export function teclado(options: TecladoOptions = {}) {
         case 'Escape':
           input.blur();
           hideKeyboard();
-          focusedElementId = null;
+          focusedElementId = '';
           break;
         case 'Shift':
           shiftKeyOn = true;
           break;
         default:
           const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
+          // @ts-ignore
           changeHandlers[focusedElementId]?.(input.value + keyValue);
           shiftKeyOn = false;
           break;
@@ -351,6 +376,7 @@ export function teclado(options: TecladoOptions = {}) {
 
       //const inputElements = document.querySelectorAll('input');
       //inputElements.forEach(inputElement => {
+      // @ts-ignore
       if (['text', 'password', 'number', 'tel', 'email', 'date'].includes(inputElement.type)) {
         inputElement.removeEventListener('focus', listener);
         inputElement.addEventListener('focus', listener);
