@@ -40,7 +40,7 @@ let presets = {
 };
 
 let focusedElementId: string;
-let changeHandlers: Record<string, (value?: string) => void> = {};
+let changeHandlers: Map<string, (value?: string) => void> = new Map();
 let keyClicked = false;
 let shiftKeyOn = false;
 let customOptions: TecladoOptions;
@@ -83,112 +83,125 @@ export function teclado(options: TecladoOptions = {}) {
     container.style.color = '#000';
     container.style.border = '1px solid #ccc';
   }
+
   const content = buildContent(customOptions.preset);
 
   container.appendChild(content);
 
   document.body.appendChild(container);
 
-  document.addEventListener('click', function (event) {
-    const keyboard = document.getElementById(KEYBOARD_ID);
-    const input = document.getElementById(focusedElementId);
+  document.removeEventListener('click', onClickListener);
+  document.addEventListener('click', onClickListener);
 
-    if (keyboard && input) {
-      const isClickInsideInput = input?.contains(event.target as HTMLElement);
-      const isClickedInsideKeyboard = keyboard?.contains(event.target as HTMLElement);
-
-      if (!isClickInsideInput && !isClickedInsideKeyboard) {
-        input.blur();
-        hideKeyboard();
-        focusedElementId = '';
-      }
-    } else {
-      hideKeyboard();
-      focusedElementId = '';
-    }
-  });
-
-  document.addEventListener('keydown', function (event) {
-    if (!keyClicked) {
-      if (options.disablePhisicalKeyboard) {
-        event.preventDefault();
-      }
-      return;
-    }
-
-    const input = document.getElementById(focusedElementId);
-
-    if (input) {
-      switch (event.key) {
-        case 'Backspace':
-          // @ts-ignore
-          changeHandlers[focusedElementId]?.(input.value.slice(0, -1));
-          break;
-        case 'Delete':
-          changeHandlers[focusedElementId]?.('');
-          break;
-        case 'Enter':
-        case 'Escape':
-          input.blur();
-          hideKeyboard();
-          focusedElementId = '';
-          break;
-        case 'Shift':
-          shiftKeyOn = !shiftKeyOn;
-
-          const keyboard = document.getElementById(KEYBOARD_ID);
-          if (keyboard) {
-            keyboard.appendChild(buildContent('alphabet'));
-          }
-
-          break;
-        default:
-          const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
-          // @ts-ignore
-          changeHandlers[focusedElementId]?.(input.value + keyValue);
-          break;
-      }
-    }
-    keyClicked = false;
-  });
-
-  function showKeyboard() {
-    const keyboard = document.getElementById(KEYBOARD_ID);
-    if (keyboard) {
-      keyboard.style.display = 'block';
-      keyboard.style.transform = 'translateY(0)';
-    }
-  }
-
-  function hideKeyboard() {
-    const keyboard = document.getElementById(KEYBOARD_ID);
-    if (keyboard) {
-      keyboard.style.transform = 'translateY(100%)';
-      setTimeout(() => {
-        keyboard.style.display = 'none';
-      }, 300);
-    }
-  }
+  document.removeEventListener('keydown', onKeyDownListener);
+  document.addEventListener('keydown', onKeyDownListener);
 
   return {
+    showKeyboard,
+    hideKeyboard,
     addEventListeners(elmentId: string, onChangeCallback: (value?: string) => void) {
-      const inputElement = document.getElementById(elmentId);
-      if (!inputElement) return;
+      const inputElement = document.getElementById(elmentId) as HTMLInputElement;
 
-      changeHandlers[elmentId] = onChangeCallback;
+      if (
+        !inputElement ||
+        !['text', 'password', 'number', 'tel', 'email', 'date'].includes(inputElement.type)
+      ) {
+        throw new Error('Element not found or not supported');
+      }
+
+      changeHandlers.set(elmentId, onChangeCallback);
 
       const listener = () => {
         focusedElementId = inputElement.id;
         showKeyboard();
       };
 
-      // @ts-ignore
-      if (['text', 'password', 'number', 'tel', 'email', 'date'].includes(inputElement.type)) {
+      inputElement.removeEventListener('focus', listener);
+      inputElement.addEventListener('focus', listener);
+
+      return () => {
         inputElement.removeEventListener('focus', listener);
-        inputElement.addEventListener('focus', listener);
-      }
+        changeHandlers.delete(elmentId);
+      };
     }
   };
+}
+
+function showKeyboard() {
+  const keyboard = document.getElementById(KEYBOARD_ID);
+  if (keyboard) {
+    keyboard.style.display = 'block';
+    keyboard.style.transform = 'translateY(0)';
+  }
+}
+
+function hideKeyboard() {
+  const keyboard = document.getElementById(KEYBOARD_ID);
+  if (keyboard) {
+    keyboard.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+      keyboard.style.display = 'none';
+    }, 300);
+  }
+}
+
+function onClickListener(event: MouseEvent) {
+  const keyboard = document.getElementById(KEYBOARD_ID);
+  const input = document.getElementById(focusedElementId);
+
+  if (keyboard && input) {
+    const isClickInsideInput = input?.contains(event.target as HTMLElement);
+    const isClickedInsideKeyboard = keyboard?.contains(event.target as HTMLElement);
+
+    if (!isClickInsideInput && !isClickedInsideKeyboard) {
+      input.blur();
+      hideKeyboard();
+      focusedElementId = '';
+    }
+  } else {
+    hideKeyboard();
+    focusedElementId = '';
+  }
+}
+
+function onKeyDownListener(event: KeyboardEvent) {
+  if (!keyClicked) {
+    if (customOptions.disablePhisicalKeyboard) {
+      event.preventDefault();
+    }
+    return;
+  }
+
+  const input = document.getElementById(focusedElementId) as HTMLInputElement;
+
+  if (input) {
+    switch (event.key) {
+      case 'Backspace':
+        changeHandlers.get(focusedElementId)?.(input.value.slice(0, -1));
+        break;
+      case 'Delete':
+        changeHandlers.get(focusedElementId)?.('');
+        break;
+      case 'Enter':
+      case 'Escape':
+        input.blur();
+        hideKeyboard();
+        focusedElementId = '';
+        break;
+      case 'Shift':
+        shiftKeyOn = !shiftKeyOn;
+        const keyboard = document.getElementById(KEYBOARD_ID);
+        if (keyboard) {
+          keyboard.appendChild(buildContent('alphabet'));
+        }
+        break;
+      default:
+        const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
+        changeHandlers.get(focusedElementId)?.(input.value + keyValue);
+        break;
+    }
+  }
+  keyClicked = false;
 }
 
 function buildContent(preset?: Preset) {
