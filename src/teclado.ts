@@ -1,151 +1,43 @@
+import {
+  ALPHABET_KEY,
+  NUMPAD_KEY,
+  NUMERIC_KEY,
+  SYMBOL_KEY,
+  alphabetPreset,
+  numericPreset,
+  numpadPreset,
+  symbolPreset,
+  findKey
+} from './presets.js';
+
+type CustomPreset = string[][];
+
+type DefaultPreset = keyof typeof presets;
+
+type Preset = DefaultPreset | CustomPreset;
+
+type TecladoOptions = {
+  contentClass?: string;
+  keyClass?: string;
+  keySymbols?: {
+    Backspace?: string;
+    Enter?: string;
+    Shift?: string;
+    Tab?: string;
+  };
+  preset?: Preset;
+  disablePhisicalKeyboard?: boolean;
+  theme?: 'light' | 'dark';
+};
+
 const KEYBOARD_ID = 'keyboard-xyz';
 
-const KEYBOARD_KEYS = [
-  // key, code
-  ['Backspace', 'Backspace'],
-  ['Tab', 'Tab'],
-  ['Enter', 'Enter'],
-  ['Shift', 'ShiftLeft'],
-  ['Shift', 'ShiftRight'],
-  ['Control', 'ControlLeft'],
-  ['Control', 'ControlRight'],
-  ['Alt', 'AltLeft'],
-  ['Alt', 'AltRight'],
-  ['CapsLock', 'CapsLock'],
-  ['Escape', 'Escape'],
-  [' ', 'Space'],
-  ['Delete', 'Delete'],
-  ['0', 'Digit0'],
-  ['1', 'Digit1'],
-  ['2', 'Digit2'],
-  ['3', 'Digit3'],
-  ['4', 'Digit4'],
-  ['5', 'Digit5'],
-  ['6', 'Digit6'],
-  ['7', 'Digit7'],
-  ['8', 'Digit8'],
-  ['9', 'Digit9'],
-  ['a', 'KeyA'],
-  ['b', 'KeyB'],
-  ['c', 'KeyC'],
-  ['ç', 'KeyC'],
-  ['d', 'KeyD'],
-  ['e', 'KeyE'],
-  ['f', 'KeyF'],
-  ['g', 'KeyG'],
-  ['h', 'KeyH'],
-  ['i', 'KeyI'],
-  ['j', 'KeyJ'],
-  ['k', 'KeyK'],
-  ['l', 'KeyL'],
-  ['m', 'KeyM'],
-  ['n', 'KeyN'],
-  ['o', 'KeyO'],
-  ['p', 'KeyP'],
-  ['q', 'KeyQ'],
-  ['r', 'KeyR'],
-  ['s', 'KeyS'],
-  ['t', 'KeyT'],
-  ['u', 'KeyU'],
-  ['v', 'KeyV'],
-  ['w', 'KeyW'],
-  ['x', 'KeyX'],
-  ['y', 'KeyY'],
-  ['z', 'KeyZ'],
-  ['0', 'Numpad0'],
-  ['1', 'Numpad1'],
-  ['2', 'Numpad2'],
-  ['3', 'Numpad3'],
-  ['4', 'Numpad4'],
-  ['5', 'Numpad5'],
-  ['6', 'Numpad6'],
-  ['7', 'Numpad7'],
-  ['8', 'Numpad8'],
-  ['9', 'Numpad9'],
-  ['*', 'NumpadMultiply'],
-  ['+', 'NumpadAdd'],
-  ['-', 'NumpadSubtract'],
-  ['.', 'NumpadDecimal'],
-  ['/', 'NumpadDivide'],
-  ['F1', 'F1'],
-  ['F2', 'F2'],
-  ['F3', 'F3'],
-  ['F4', 'F4'],
-  ['F5', 'F5'],
-  ['F6', 'F6'],
-  ['F7', 'F7'],
-  ['F8', 'F8'],
-  ['F9', 'F9'],
-  ['F10', 'F10'],
-  ['F11', 'F11'],
-  ['F12', 'F12'],
-  [';', 'Semicolon'],
-  ['=', 'Equal'],
-  [',', 'Comma'],
-  ['-', 'Minus'],
-  ['.', 'Period'],
-  ['/', 'Slash'],
-  ['\\', 'Backslash'],
-  ['|', 'Bar'],
-  ['`', 'Backquote'],
-  ['[', 'BracketLeft'],
-  [']', 'BracketRight'],
-  ['{', 'BraceLeft'],
-  ['}', 'BraceRight'],
-  ['>', 'ArrowRight'],
-  ['<', 'ArrowLeft'],
-  ['(', 'ParenthesisLeft'],
-  [')', 'ParenthesisRight'],
-  ["'", 'Quote'],
-  ['"', 'DoubleQuote'],
-  ['?', 'Question'],
-  [':', 'Colon'],
-  ['!', 'Exclamation'],
-  ['~', 'Tilde'],
-  ['&', 'Ampersand'],
-  ['$', 'Dollar'],
-  ['%', 'Percent'],
-  ['^', 'Caret'],
-  ['#', 'Hash'],
-  ['@', 'At'],
-  ['_', 'Underscore']
-];
-
-const ALPHABET_KEY = 'ABC';
-const NUMERIC_KEY = '?123';
-const NUMBERPAD_KEY = '1234';
-const SYMBOL_KEY = '=/<';
-
-const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n) || [n, n];
-
-const alphabetPreset = [
-  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
-  [NUMERIC_KEY, ',', ' ', '.', 'Enter']
-].map(line => line.map(findKey));
-
-const numericPreset = [
-  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-  ['@', '#', '$', '_', '&', '-', '+', '(', ')', '/'],
-  [SYMBOL_KEY, '*', '"', "'", ':', ';', '!', '?', 'Backspace'],
-  [ALPHABET_KEY, ',', NUMBERPAD_KEY, ' ', '.', 'Enter']
-].map(line => line.map(findKey));
-
-const numpadPreset = [
-  //['/', '*', '-', '+'],
-  ['1', '2', '3', ALPHABET_KEY],
-  ['4', '5', '6', SYMBOL_KEY],
-  ['7', '8', '9', 'Backspace'],
-  ['.', '0', ',', 'Enter']
-].map(line => line.map(findKey));
-
-const symbolPreset = [
-  ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  [NUMERIC_KEY, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
-  [ALPHABET_KEY, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
-].map(line => line.map(findKey));
+let presets = {
+  alphabet: alphabetPreset,
+  numeric: numericPreset,
+  numpad: numpadPreset,
+  symbol: symbolPreset
+};
 
 let focusedElementId: string;
 let changeHandlers: Record<string, (value?: string) => void> = {};
@@ -153,123 +45,15 @@ let keyClicked = false;
 let shiftKeyOn = false;
 let customOptions: TecladoOptions;
 
-type TecladoOptions = {
-  contentClass?: string;
-  keyClass?: string;
-  keySymbols?: {
-    backspace?: string;
-    enter?: string;
-    shift?: string;
-    tab?: string;
-  };
-  preset?: 'alphabet' | 'numeric' | 'numpad' | 'symbol';
-};
-
-function buildContent(preset: any) {
-  const ctn = document.getElementById('teclado-content');
-  if (ctn) {
-    ctn.parentElement?.removeChild(ctn);
-  }
-
-  // Content element
-  const content = document.createElement('div');
-  content.id = 'teclado-content';
-  content.style.display = 'flex';
-  content.style.flexDirection = 'column';
-  content.style.justifyContent = 'center';
-  content.style.gap = '10px';
-
-  const buttonsIds = [];
-  const presets = { alphabetPreset, numericPreset, numpadPreset, symbolPreset };
-  // @ts-ignore
-  const keyboardPreset = presets[preset ? `${preset}Preset` : 'alphabetPreset'];
-
-  for (const lineKeys of keyboardPreset) {
-    // Line element
-    const line = document.createElement('div');
-    line.style.display = 'flex';
-    line.style.gap = '6px';
-    line.style.justifyContent = 'center';
-
-    for (const [key, code] of lineKeys) {
-      const buttonId = `keyboard-button-${key}`;
-
-      const button = document.createElement('button');
-      //button.className = 'keyboard-button';
-      button.id = buttonId;
-      button.innerHTML = key;
-      button.style.width = '4rem';
-      button.style.height = '3rem';
-      button.style.fontSize = '1.5rem';
-      button.style.color = 'white';
-      button.style.backgroundColor = 'black';
-      button.style.borderRadius = '5px';
-      button.style.display = 'flex';
-      button.style.alignItems = 'center';
-      button.style.justifyContent = 'center';
-      button.style.cursor = 'pointer';
-
-      if (
-        key === 'Backspace' ||
-        key === 'Enter' ||
-        key === 'Shift' ||
-        [ALPHABET_KEY, NUMERIC_KEY, SYMBOL_KEY, NUMBERPAD_KEY].includes(key)
-      ) {
-        button.style.width = '6rem';
-        button.style.fontSize = '1rem';
-      }
-
-      if (key === ' ') {
-        button.style.width = '14rem';
-      }
-
-      button.addEventListener('click', e => {
-        if ([NUMERIC_KEY, NUMBERPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
-          const ctn = buildContent(
-            key === NUMERIC_KEY
-              ? 'numeric'
-              : key === NUMBERPAD_KEY
-              ? 'numpad'
-              : key === SYMBOL_KEY
-              ? 'symbol'
-              : 'alphabet'
-          );
-          const keyboard = document.getElementById(KEYBOARD_ID);
-          if (keyboard) {
-            keyboard.appendChild(ctn);
-          }
-          e.stopPropagation();
-          return;
-        }
-
-        const input = document.getElementById(focusedElementId);
-        //input.value += key;
-        input?.focus();
-        const event = new KeyboardEvent('keydown', {
-          key,
-          code,
-          shiftKey: shiftKeyOn
-        });
-
-        keyClicked = true;
-        document.dispatchEvent(event);
-        e.stopPropagation();
-      });
-
-      line.appendChild(button);
-
-      buttonsIds.push(buttonId);
-    }
-
-    content.appendChild(line);
-  }
-
-  return content;
-}
-
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
-    customOptions = options;
+    if (typeof options.preset === 'object') {
+      presets.alphabet = options.preset
+        .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
+        .map(line => line.map(findKey));
+    }
+
+    customOptions = { ...options, preset: 'alphabet' };
   }
 
   const keyboard = document.getElementById(KEYBOARD_ID);
@@ -287,10 +71,19 @@ export function teclado(options: TecladoOptions = {}) {
   container.style.right = '0px';
   container.style.display = 'none';
   container.style.zIndex = '9999';
-  container.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-  container.style.padding = '10px';
+  container.style.width = '100%';
+  container.style.userSelect = 'none';
 
-  const content = buildContent(options.preset);
+  if (customOptions.theme === 'dark') {
+    container.style.background = '#333';
+    container.style.color = '#fff';
+    container.style.border = '1px solid #666';
+  } else {
+    container.style.background = '#fff';
+    container.style.color = '#000';
+    container.style.border = '1px solid #ccc';
+  }
+  const content = buildContent(customOptions.preset);
 
   container.appendChild(content);
 
@@ -317,7 +110,9 @@ export function teclado(options: TecladoOptions = {}) {
 
   document.addEventListener('keydown', function (event) {
     if (!keyClicked) {
-      //event.preventDefault();
+      if (options.disablePhisicalKeyboard) {
+        event.preventDefault();
+      }
       return;
     }
 
@@ -339,13 +134,18 @@ export function teclado(options: TecladoOptions = {}) {
           focusedElementId = '';
           break;
         case 'Shift':
-          shiftKeyOn = true;
+          shiftKeyOn = !shiftKeyOn;
+
+          const keyboard = document.getElementById(KEYBOARD_ID);
+          if (keyboard) {
+            keyboard.appendChild(buildContent('alphabet'));
+          }
+
           break;
         default:
           const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
           // @ts-ignore
           changeHandlers[focusedElementId]?.(input.value + keyValue);
-          shiftKeyOn = false;
           break;
       }
     }
@@ -354,12 +154,20 @@ export function teclado(options: TecladoOptions = {}) {
 
   function showKeyboard() {
     const keyboard = document.getElementById(KEYBOARD_ID);
-    if (keyboard) keyboard.style.display = 'block';
+    if (keyboard) {
+      keyboard.style.display = 'block';
+      keyboard.style.transform = 'translateY(0)';
+    }
   }
 
   function hideKeyboard() {
     const keyboard = document.getElementById(KEYBOARD_ID);
-    if (keyboard) keyboard.style.display = 'none';
+    if (keyboard) {
+      keyboard.style.transform = 'translateY(100%)';
+      setTimeout(() => {
+        keyboard.style.display = 'none';
+      }, 300);
+    }
   }
 
   return {
@@ -374,18 +182,189 @@ export function teclado(options: TecladoOptions = {}) {
         showKeyboard();
       };
 
-      //const inputElements = document.querySelectorAll('input');
-      //inputElements.forEach(inputElement => {
       // @ts-ignore
       if (['text', 'password', 'number', 'tel', 'email', 'date'].includes(inputElement.type)) {
         inputElement.removeEventListener('focus', listener);
         inputElement.addEventListener('focus', listener);
-
-        /* inputElement.addEventListener('blur', _ => {
-        hideKeyboard();
-      }); */
       }
-      //});
     }
   };
+}
+
+function buildContent(preset?: Preset) {
+  const contentId = 'keyboard-content';
+
+  const existingContent = document.getElementById(contentId);
+  if (existingContent) {
+    existingContent?.parentElement?.removeChild(existingContent);
+  }
+
+  // Content element
+  const content = document.createElement('div');
+  content.id = contentId;
+  content.style.display = 'flex';
+  content.style.flexDirection = 'column';
+  content.style.justifyContent = 'center';
+  content.style.gap = '10px';
+  content.style.paddingTop = '10px';
+  content.style.paddingBottom = '10px';
+  content.style.width = '100%';
+
+  if (customOptions?.contentClass) {
+    content.className = customOptions.contentClass;
+  }
+
+  const keyboardPreset = preset ? presets[preset as DefaultPreset] : presets.alphabet;
+
+  for (const lineKeys of keyboardPreset) {
+    // Line element
+    const line = document.createElement('div');
+    line.style.display = 'flex';
+    line.style.gap = '6px';
+    line.style.justifyContent = 'center';
+    line.style.paddingLeft = '10px';
+    line.style.paddingRight = '10px';
+
+    for (const [key, code] of lineKeys) {
+      const buttonId = `keyboard-button-${key}`;
+
+      let keyValue = key === NUMPAD_KEY ? key.slice(0, 2) + '</br>' + key.slice(2, 4) : key;
+
+      if (customOptions?.keySymbols && ['Backspace', 'Enter', 'Shift'].includes(key)) {
+        // @ts-ignore
+        keyValue = customOptions.keySymbols[key] || key;
+      }
+
+      if (shiftKeyOn) {
+        keyValue = keyValue.toUpperCase();
+      }
+
+      const button = document.createElement('button');
+      button.id = buttonId;
+      button.innerHTML = keyValue;
+      button.style.width = '4rem';
+      button.style.height = '3rem';
+      button.style.fontSize = '1.5rem';
+      button.style.color = 'white';
+      button.style.backgroundColor = 'black';
+      button.style.borderRadius = '5px';
+      button.style.display = 'flex';
+      button.style.alignItems = 'center';
+      button.style.justifyContent = 'center';
+      button.style.cursor = 'pointer';
+
+      if (customOptions.theme === 'dark') {
+        button.style.background = '#333';
+        button.style.color = '#fff';
+        button.style.border = '1px solid #666';
+
+        button.style.boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
+        button.style.transition = 'box-shadow 0.3s ease';
+        button.addEventListener('mousedown', () => {
+          button.style.boxShadow = '0 4px 8px rgba(255, 255, 255, 0.4)';
+        });
+        button.addEventListener('mouseup', () => {
+          button.style.boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
+        });
+      } else {
+        button.style.background = '#fff';
+        button.style.color = '#000';
+        button.style.border = '1px solid #ccc';
+
+        button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        button.style.transition = 'box-shadow 0.3s ease';
+        button.addEventListener('mousedown', () => {
+          button.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.4)';
+        });
+        button.addEventListener('mouseup', () => {
+          button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        });
+      }
+
+      if (
+        key === 'Backspace' ||
+        key === 'Enter' ||
+        key === 'Shift' ||
+        [ALPHABET_KEY, NUMERIC_KEY, SYMBOL_KEY, NUMPAD_KEY].includes(key)
+      ) {
+        button.style.width = '6rem';
+        // @ts-ignore
+        if (!customOptions?.keySymbols?.[key]) {
+          button.style.fontSize = '1rem';
+        }
+      }
+
+      if (key === ' ') {
+        button.style.width = '14rem';
+      }
+
+      if (key === 'Shift') {
+        if (shiftKeyOn) {
+          button.style.position = 'relative';
+          const dotIndicator = document.createElement('div');
+
+          dotIndicator.id = 'dot-indicator';
+          dotIndicator.style.width = '0.5rem';
+          dotIndicator.style.height = '0.5rem';
+          dotIndicator.style.borderRadius = '50%';
+          dotIndicator.style.backgroundColor = customOptions.theme === 'dark' ? '#fff' : '#000';
+          dotIndicator.style.position = 'absolute';
+          dotIndicator.style.top = '0.25rem';
+          dotIndicator.style.right = '0.25rem';
+
+          button.appendChild(dotIndicator);
+        } else {
+          const dotIndicator = button.querySelector('#dot-indicator');
+          if (dotIndicator) {
+            button.removeChild(dotIndicator);
+          }
+        }
+      }
+
+      if (customOptions?.keyClass) {
+        button.className = customOptions.keyClass;
+      }
+
+      button.addEventListener('click', e => {
+        if ([NUMERIC_KEY, NUMPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
+          const ctn = buildContent(
+            key === NUMERIC_KEY
+              ? 'numeric'
+              : key === NUMPAD_KEY
+              ? 'numpad'
+              : key === SYMBOL_KEY
+              ? 'symbol'
+              : 'alphabet'
+          );
+
+          const keyboard = document.getElementById(KEYBOARD_ID);
+          if (keyboard) {
+            keyboard.appendChild(ctn);
+          }
+
+          e.stopPropagation();
+          return;
+        }
+
+        const input = document.getElementById(focusedElementId);
+        input?.focus();
+
+        const event = new KeyboardEvent('keydown', {
+          key,
+          code,
+          shiftKey: shiftKeyOn
+        });
+
+        keyClicked = true;
+        document.dispatchEvent(event);
+        e.stopPropagation();
+      });
+
+      line.appendChild(button);
+    }
+
+    content.appendChild(line);
+  }
+
+  return content;
 }

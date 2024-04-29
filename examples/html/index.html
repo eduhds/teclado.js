@@ -12,7 +12,21 @@
     <script type="module">
       import { teclado } from '../../lib/esm/index.js';
 
-      var kb = teclado();
+      var kb = teclado({
+        contentClass: 'teste1',
+        keyClass: 'teste2',
+        keySymbols: {
+          Backspace: '⌫',
+          Enter: '⏎',
+          Shift: '⇧'
+        },
+        preset: [
+          ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+          ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ç'],
+          ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
+          ['Numeric', ',', ' ', '.', 'Enter']
+        ]
+      });
 
       kb.addEventListeners('myElement', val => {
         document.getElementById('myElement').value = val;
