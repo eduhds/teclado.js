@@ -28,6 +28,8 @@ type TecladoOptions = {
   preset?: Preset;
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
+  withHeader?: boolean;
+  onSubmit?: (value?: string) => void;
 };
 
 const KEYBOARD_ID = 'tecladojs-keyboard';
@@ -60,6 +62,7 @@ let changeHandlers: Map<string, (value?: string) => void> = new Map();
 let keyClicked = false;
 let shiftKeyOn = false;
 let customOptions: TecladoOptions;
+let headerText = '';
 
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
@@ -116,11 +119,27 @@ export function teclado(options: TecladoOptions = {}) {
     on(elmentId: string, changeCallback: (value?: string) => void) {
       const inputElement = document.getElementById(elmentId) as HTMLInputElement;
 
+      if (!elmentId || !changeCallback) {
+        throw new Error('Element Id and changeCallback are required');
+      }
+
       if (!inputElement || !ALLOWED_INPUT_TYPES.includes(inputElement.type)) {
         throw new Error('Element not found or not supported');
       }
 
-      changeHandlers.set(elmentId, changeCallback);
+      changeHandlers.set(
+        elmentId,
+        customOptions.withHeader
+          ? (value?: string) => {
+              const header = document.getElementById(`${KEYBOARD_ID}-header`);
+              if (header) {
+                headerText = value || '';
+                header.innerText = headerText;
+              }
+              changeCallback(value);
+            }
+          : changeCallback
+      );
 
       const listener = () => {
         focusedElementId = inputElement.id;
@@ -239,6 +258,28 @@ function buildContent(preset?: Preset) {
 
   if (customOptions?.contentClass) {
     content.className = customOptions.contentClass;
+  }
+
+  if (customOptions?.withHeader) {
+    // Header
+    const header = document.createElement('div');
+    header.id = `${KEYBOARD_ID}-header`;
+    header.style.display = 'flex';
+    header.style.paddingLeft = '10px';
+    header.style.paddingRight = '10px';
+    header.style.justifyContent = 'center';
+    header.style.alignItems = 'center';
+    header.style.fontSize = '1rem';
+    header.style.height = '1.5rem';
+    header.innerText = headerText;
+
+    if (customOptions.theme === 'dark') {
+      header.style.color = '#fff';
+    } else {
+      header.style.color = '#000';
+    }
+
+    content.appendChild(header);
   }
 
   const keyboardPreset = preset ? presets[preset as DefaultPreset] : presets.alphabet;

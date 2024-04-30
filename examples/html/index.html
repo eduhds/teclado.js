@@ -7,7 +7,6 @@
   </head>
   <body>
     <input type="text" id="myElement" />
-    <p id="value"></p>
 
     <script type="module">
       import { teclado } from '../../lib/esm/index.js';
@@ -23,12 +22,13 @@
           ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ç'],
           ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
           ['Numeric', ',', ' ', '.', 'Enter']
-        ]
+        ],
+        withHeader: true,
+        theme: 'dark'
       });
 
-      kb.addEventListeners('myElement', val => {
+      kb.on('myElement', val => {
         document.getElementById('myElement').value = val;
-        document.getElementById('value').innerHTML = val;
       });
     </script>
   </body>
