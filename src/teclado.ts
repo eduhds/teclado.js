@@ -30,7 +30,23 @@ type TecladoOptions = {
   theme?: 'light' | 'dark';
 };
 
-const KEYBOARD_ID = 'keyboard-xyz';
+const KEYBOARD_ID = 'tecladojs-keyboard';
+
+const ALLOWED_INPUT_TYPES = [
+  'text',
+  'date',
+  'datetime-local',
+  'email',
+  'month',
+  'number',
+  'password',
+  'search',
+  'tel',
+  'text',
+  'time',
+  'url',
+  'week'
+];
 
 let presets = {
   alphabet: alphabetPreset,
@@ -84,9 +100,7 @@ export function teclado(options: TecladoOptions = {}) {
     container.style.border = '1px solid #ccc';
   }
 
-  const content = buildContent(customOptions.preset);
-
-  container.appendChild(content);
+  container.appendChild(buildContent(customOptions.preset));
 
   document.body.appendChild(container);
 
@@ -99,17 +113,14 @@ export function teclado(options: TecladoOptions = {}) {
   return {
     showKeyboard,
     hideKeyboard,
-    addEventListeners(elmentId: string, onChangeCallback: (value?: string) => void) {
+    on(elmentId: string, changeCallback: (value?: string) => void) {
       const inputElement = document.getElementById(elmentId) as HTMLInputElement;
 
-      if (
-        !inputElement ||
-        !['text', 'password', 'number', 'tel', 'email', 'date'].includes(inputElement.type)
-      ) {
+      if (!inputElement || !ALLOWED_INPUT_TYPES.includes(inputElement.type)) {
         throw new Error('Element not found or not supported');
       }
 
-      changeHandlers.set(elmentId, onChangeCallback);
+      changeHandlers.set(elmentId, changeCallback);
 
       const listener = () => {
         focusedElementId = inputElement.id;
@@ -119,10 +130,12 @@ export function teclado(options: TecladoOptions = {}) {
       inputElement.removeEventListener('focus', listener);
       inputElement.addEventListener('focus', listener);
 
-      return () => {
+      const unsubscribe = () => {
         inputElement.removeEventListener('focus', listener);
         changeHandlers.delete(elmentId);
       };
+
+      return unsubscribe;
     }
   };
 }
@@ -205,9 +218,10 @@ function onKeyDownListener(event: KeyboardEvent) {
 }
 
 function buildContent(preset?: Preset) {
-  const contentId = 'keyboard-content';
+  const contentId = `${KEYBOARD_ID}-content`;
 
   const existingContent = document.getElementById(contentId);
+
   if (existingContent) {
     existingContent?.parentElement?.removeChild(existingContent);
   }
@@ -239,22 +253,11 @@ function buildContent(preset?: Preset) {
     line.style.paddingRight = '10px';
 
     for (const [key, code] of lineKeys) {
-      const buttonId = `keyboard-button-${key}`;
-
-      let keyValue = key === NUMPAD_KEY ? key.slice(0, 2) + '</br>' + key.slice(2, 4) : key;
-
-      if (customOptions?.keySymbols && ['Backspace', 'Enter', 'Shift'].includes(key)) {
-        // @ts-ignore
-        keyValue = customOptions.keySymbols[key] || key;
-      }
-
-      if (shiftKeyOn) {
-        keyValue = keyValue.toUpperCase();
-      }
+      // Button element
+      const buttonId = `${KEYBOARD_ID}-button-${key}`;
 
       const button = document.createElement('button');
       button.id = buttonId;
-      button.innerHTML = keyValue;
       button.style.width = '4rem';
       button.style.height = '3rem';
       button.style.fontSize = '1.5rem';
@@ -293,6 +296,19 @@ function buildContent(preset?: Preset) {
           button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
         });
       }
+
+      let keyValue = key === NUMPAD_KEY ? key.slice(0, 2) + '</br>' + key.slice(2, 4) : key;
+
+      if (customOptions?.keySymbols && ['Backspace', 'Enter', 'Shift'].includes(key)) {
+        // @ts-ignore
+        keyValue = customOptions.keySymbols[key] || key;
+      }
+
+      if (shiftKeyOn) {
+        keyValue = keyValue.toUpperCase();
+      }
+
+      button.innerHTML = keyValue;
 
       if (
         key === 'Backspace' ||
@@ -340,7 +356,7 @@ function buildContent(preset?: Preset) {
 
       button.addEventListener('click', e => {
         if ([NUMERIC_KEY, NUMPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
-          const ctn = buildContent(
+          const content = buildContent(
             key === NUMERIC_KEY
               ? 'numeric'
               : key === NUMPAD_KEY
@@ -351,8 +367,9 @@ function buildContent(preset?: Preset) {
           );
 
           const keyboard = document.getElementById(KEYBOARD_ID);
+
           if (keyboard) {
-            keyboard.appendChild(ctn);
+            keyboard.appendChild(content);
           }
 
           e.stopPropagation();
