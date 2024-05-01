@@ -18,6 +18,54 @@ yarn add eduhds/teclado.js
 pnpm add eduhds/teclado.js
 ```
 
+## Usage
+
+Default keyboard:
+
+```html
+<input type="text" id="inputId" />
+
+<script type="module">
+  import { teclado } from 'teclado.js';
+
+  var kb = teclado();
+
+  kb.on('inputId', value => {
+    document.getElementById('inputId').value = val;
+  });
+</script>
+```
+
+Custom layout with options:
+
+```html
+<input type="text" id="inputId" />
+
+<script type="module">
+  import { teclado } from 'teclado.js';
+
+  var kb = teclado({
+    keySymbols: {
+      Backspace: '⌫',
+      Enter: '⏎',
+      Shift: '⇧'
+    },
+    preset: [
+      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ç'],
+      ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
+      ['Numeric', ',', ' ', '.', 'Enter']
+    ],
+    withHeader: true,
+    theme: 'dark'
+  });
+
+  kb.on('inputId', val => {
+    document.getElementById('inputId').value = val;
+  });
+</script>
+```
+
 ## Desenvolvimento
 
 ```sh
