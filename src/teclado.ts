@@ -117,18 +117,14 @@ export function teclado(options: TecladoOptions = {}) {
     showKeyboard,
     hideKeyboard,
     on(elmentId: string, changeCallback: (value?: string) => void) {
+      const inputElement = document.getElementById(elmentId) as HTMLInputElement;
+
       if (!elmentId || !changeCallback) {
         throw new Error('Element Id and changeCallback are required');
       }
 
-      const inputElement = document.getElementById(elmentId) as HTMLInputElement;
-
-      if (!inputElement) {
-        return () => {};
-      }
-
-      if (!ALLOWED_INPUT_TYPES.includes(inputElement.type)) {
-        throw new Error('Element not found or not supported');
+      if (!inputElement || !ALLOWED_INPUT_TYPES.includes(inputElement.type)) {
+        throw new Error('Element not found or not supported, check if Id and type is correct');
       }
 
       changeHandlers.set(
