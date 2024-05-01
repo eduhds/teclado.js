@@ -29,7 +29,7 @@ type TecladoOptions = {
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
   withHeader?: boolean;
-  onSubmit?: (value?: string) => void;
+  onSubmit?: () => void;
 };
 
 const KEYBOARD_ID = 'tecladojs-keyboard';
@@ -175,6 +175,9 @@ function hideKeyboard() {
       keyboard.style.display = 'none';
     }, 300);
   }
+  focusedElementId = '';
+  headerText = '';
+  shiftKeyOn = false;
 }
 
 function onClickListener(event: MouseEvent) {
@@ -188,11 +191,9 @@ function onClickListener(event: MouseEvent) {
     if (!isClickInsideInput && !isClickedInsideKeyboard) {
       input.blur();
       hideKeyboard();
-      focusedElementId = '';
     }
   } else {
     hideKeyboard();
-    focusedElementId = '';
   }
 }
 
@@ -215,10 +216,14 @@ function onKeyDownListener(event: KeyboardEvent) {
         changeHandlers.get(focusedElementId)?.('');
         break;
       case 'Enter':
+        if (customOptions.onSubmit) {
+          if (typeof customOptions.onSubmit === 'function') {
+            customOptions.onSubmit();
+          }
+        }
       case 'Escape':
         input.blur();
         hideKeyboard();
-        focusedElementId = '';
         break;
       case 'Shift':
         shiftKeyOn = !shiftKeyOn;
