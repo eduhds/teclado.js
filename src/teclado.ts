@@ -12,7 +12,7 @@ import {
 
 type Preset = Array<Array<string>>;
 
-type KeyboardType = keyof typeof presets;
+export type KeyboardType = keyof typeof presets;
 
 type ChangeHandlers = { onChange: (value?: string) => void; onSubmit?: () => void };
 
@@ -164,6 +164,7 @@ export function teclado(options: TecladoOptions = {}) {
 function showKeyboard() {
   const keyboard = document.getElementById(KEYBOARD_ID);
   if (keyboard) {
+    keyboard.appendChild(buildContent());
     keyboard.style.display = 'block';
     keyboard.style.transform = 'translateY(0)';
   }
@@ -418,12 +419,10 @@ function buildContent() {
               ? 'symbol'
               : 'alphabet';
 
-          const content = buildContent();
-
           const keyboard = document.getElementById(KEYBOARD_ID);
 
           if (keyboard) {
-            keyboard.appendChild(content);
+            keyboard.appendChild(buildContent());
           }
 
           e.stopPropagation();
