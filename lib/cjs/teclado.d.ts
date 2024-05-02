@@ -1,5 +1,5 @@
 type Preset = Array<Array<string>>;
-type KeyboardType = keyof typeof presets;
+export type KeyboardType = keyof typeof presets;
 type TecladoOptions = {
     contentClass?: string;
     keyClass?: string;
