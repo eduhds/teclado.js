@@ -141,6 +141,6 @@ export const numpadPreset = [
 export const symbolPreset = [
   ['~', '`', '|', '•', '√', 'π', '÷', '×', '§', '∆'],
   ['£', '¢', '€', '¥', '^', '°', '=', '{', '}', '\\'],
-  [NUMERIC_KEY, '%', '©', '®', '™', '✓', '[', ']'],
+  [NUMERIC_KEY, '%', '©', '®', '™', '✓', '[', ']', 'Backspace'],
   [ALPHABET_KEY, NUMPAD_KEY, '<', ' ', '>', 'Enter']
 ].map(line => line.map(findKey));

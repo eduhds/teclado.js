@@ -10,11 +10,11 @@ import {
   findKey
 } from './presets.js';
 
-type CustomPreset = string[][];
+type Preset = Array<Array<string>>;
 
-type DefaultPreset = keyof typeof presets;
+type KeyboardType = keyof typeof presets;
 
-type Preset = DefaultPreset | CustomPreset;
+type ChangeHandlers = { onChange: (value?: string) => void; onSubmit?: () => void };
 
 type TecladoOptions = {
   contentClass?: string;
@@ -29,7 +29,6 @@ type TecladoOptions = {
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
   withHeader?: boolean;
-  onSubmit?: () => void;
 };
 
 const KEYBOARD_ID = 'tecladojs-keyboard';
@@ -58,11 +57,12 @@ let presets = {
 };
 
 let focusedElementId: string;
-let changeHandlers: Map<string, (value?: string) => void> = new Map();
+let changeHandlers: Map<string, ChangeHandlers> = new Map();
 let keyClicked = false;
 let shiftKeyOn = false;
 let customOptions: TecladoOptions;
 let headerText = '';
+let keyboardType: KeyboardType = 'alphabet';
 
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
@@ -72,7 +72,7 @@ export function teclado(options: TecladoOptions = {}) {
         .map(line => line.map(findKey));
     }
 
-    customOptions = { ...options, preset: 'alphabet' };
+    customOptions = options;
   }
 
   const keyboard = document.getElementById(KEYBOARD_ID);
@@ -103,7 +103,7 @@ export function teclado(options: TecladoOptions = {}) {
     container.style.border = '1px solid #ccc';
   }
 
-  container.appendChild(buildContent(customOptions.preset));
+  container.appendChild(buildContent());
 
   document.body.appendChild(container);
 
@@ -116,7 +116,8 @@ export function teclado(options: TecladoOptions = {}) {
   return {
     showKeyboard,
     hideKeyboard,
-    on(elmentId: string, changeCallback: (value?: string) => void) {
+    setKeyboardType,
+    on(elmentId: string, changeCallback: (value?: string) => void, submitCallback?: () => void) {
       const inputElement = document.getElementById(elmentId) as HTMLInputElement;
 
       if (!elmentId || !changeCallback) {
@@ -127,19 +128,20 @@ export function teclado(options: TecladoOptions = {}) {
         throw new Error('Element not found or not supported, check if Id and type is correct');
       }
 
-      changeHandlers.set(
-        elmentId,
-        customOptions.withHeader
-          ? (value?: string) => {
-              const header = document.getElementById(`${KEYBOARD_ID}-header`);
-              if (header) {
-                headerText = value || '';
-                header.innerText = headerText;
-              }
-              changeCallback(value);
+      const onChange = customOptions.withHeader
+        ? (value?: string) => {
+            const header = document.getElementById(`${KEYBOARD_ID}-header`);
+            if (header) {
+              headerText = value || '';
+              header.innerText = headerText;
             }
-          : changeCallback
-      );
+            changeCallback(value);
+          }
+        : changeCallback;
+
+      const onSubmit = submitCallback;
+
+      changeHandlers.set(elmentId, { onSubmit, onChange });
 
       const listener = () => {
         focusedElementId = inputElement.id;
@@ -178,6 +180,15 @@ function hideKeyboard() {
   focusedElementId = '';
   headerText = '';
   shiftKeyOn = false;
+  keyboardType = 'alphabet';
+}
+
+function setKeyboardType(type: KeyboardType) {
+  if (type in presets) {
+    keyboardType = type;
+    return;
+  }
+  throw new Error('Invalid keyboard type');
 }
 
 function onClickListener(event: MouseEvent) {
@@ -210,17 +221,13 @@ function onKeyDownListener(event: KeyboardEvent) {
   if (input) {
     switch (event.key) {
       case 'Backspace':
-        changeHandlers.get(focusedElementId)?.(input.value.slice(0, -1));
+        changeHandlers.get(focusedElementId)?.onChange(input.value.slice(0, -1));
         break;
       case 'Delete':
-        changeHandlers.get(focusedElementId)?.('');
+        changeHandlers.get(focusedElementId)?.onChange('');
         break;
       case 'Enter':
-        if (customOptions.onSubmit) {
-          if (typeof customOptions.onSubmit === 'function') {
-            customOptions.onSubmit();
-          }
-        }
+        changeHandlers.get(focusedElementId)?.onSubmit?.();
       case 'Escape':
         input.blur();
         hideKeyboard();
@@ -229,19 +236,19 @@ function onKeyDownListener(event: KeyboardEvent) {
         shiftKeyOn = !shiftKeyOn;
         const keyboard = document.getElementById(KEYBOARD_ID);
         if (keyboard) {
-          keyboard.appendChild(buildContent('alphabet'));
+          keyboard.appendChild(buildContent());
         }
         break;
       default:
         const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
-        changeHandlers.get(focusedElementId)?.(input.value + keyValue);
+        changeHandlers.get(focusedElementId)?.onChange(input.value + keyValue);
         break;
     }
   }
   keyClicked = false;
 }
 
-function buildContent(preset?: Preset) {
+function buildContent() {
   const contentId = `${KEYBOARD_ID}-content`;
 
   const existingContent = document.getElementById(contentId);
@@ -287,7 +294,7 @@ function buildContent(preset?: Preset) {
     content.appendChild(header);
   }
 
-  const keyboardPreset = preset ? presets[preset as DefaultPreset] : presets.alphabet;
+  const keyboardPreset = presets[keyboardType];
 
   for (const lineKeys of keyboardPreset) {
     // Line element
@@ -402,15 +409,16 @@ function buildContent(preset?: Preset) {
 
       button.addEventListener('click', e => {
         if ([NUMERIC_KEY, NUMPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
-          const content = buildContent(
+          keyboardType =
             key === NUMERIC_KEY
               ? 'numeric'
               : key === NUMPAD_KEY
               ? 'numpad'
               : key === SYMBOL_KEY
               ? 'symbol'
-              : 'alphabet'
-          );
+              : 'alphabet';
+
+          const content = buildContent();
 
           const keyboard = document.getElementById(KEYBOARD_ID);
 

@@ -1,6 +1,5 @@
-type CustomPreset = string[][];
-type DefaultPreset = keyof typeof presets;
-type Preset = DefaultPreset | CustomPreset;
+type Preset = Array<Array<string>>;
+type KeyboardType = keyof typeof presets;
 type TecladoOptions = {
     contentClass?: string;
     keyClass?: string;
@@ -14,7 +13,6 @@ type TecladoOptions = {
     disablePhisicalKeyboard?: boolean;
     theme?: 'light' | 'dark';
     withHeader?: boolean;
-    onSubmit?: () => void;
 };
 declare let presets: {
     alphabet: string[][][];
@@ -25,8 +23,10 @@ declare let presets: {
 export declare function teclado(options?: TecladoOptions): {
     showKeyboard: typeof showKeyboard;
     hideKeyboard: typeof hideKeyboard;
-    on(elmentId: string, changeCallback: (value?: string) => void): () => void;
+    setKeyboardType: typeof setKeyboardType;
+    on(elmentId: string, changeCallback: (value?: string) => void, submitCallback?: () => void): () => void;
 };
 declare function showKeyboard(): void;
 declare function hideKeyboard(): void;
+declare function setKeyboardType(type: KeyboardType): void;
 export {};
