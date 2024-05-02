@@ -6,7 +6,19 @@
     <title>Document</title>
   </head>
   <body>
-    <input type="text" id="myElement" />
+    <form>
+      <label for="name">First name:</label><br />
+      <input type="text" id="name" name="name" /><br />
+
+      <label for="email">Email:</label><br />
+      <input type="email" id="email" name="email" /><br />
+
+      <label for="age">Age:</label><br />
+      <input type="number" id="age" name="age" /><br />
+
+      <label for="password">Password:</label><br />
+      <input type="password" id="password" name="password" /><br />
+    </form>
 
     <script type="module">
       import { teclado } from '../../lib/esm/index.js';
@@ -27,9 +39,19 @@
         theme: 'dark'
       });
 
-      kb.on('myElement', val => {
-        document.getElementById('myElement').value = val;
-      });
+      function start(id, keyboardType) {
+        kb.on(id, {
+          onChange: val => {
+            document.getElementById(id).value = val;
+          },
+          keyboardType
+        });
+      }
+
+      start('name');
+      start('email', 'alphabet');
+      start('age', 'numpad');
+      start('password', 'symbol');
     </script>
   </body>
 </html>

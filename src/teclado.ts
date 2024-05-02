@@ -14,7 +14,11 @@ type Preset = Array<Array<string>>;
 
 export type KeyboardType = keyof typeof presets;
 
-type ChangeHandlers = { onChange: (value?: string) => void; onSubmit?: () => void };
+type InputConfig = {
+  keyboardType?: KeyboardType;
+  onChange: (value?: string) => void;
+  onSubmit?: () => void;
+};
 
 type TecladoOptions = {
   contentClass?: string;
@@ -57,7 +61,7 @@ let presets = {
 };
 
 let focusedElementId: string;
-let changeHandlers: Map<string, ChangeHandlers> = new Map();
+let inputConfig: Map<string, InputConfig> = new Map();
 let keyClicked = false;
 let shiftKeyOn = false;
 let customOptions: TecladoOptions;
@@ -117,10 +121,10 @@ export function teclado(options: TecladoOptions = {}) {
     showKeyboard,
     hideKeyboard,
     setKeyboardType,
-    on(elmentId: string, changeCallback: (value?: string) => void, submitCallback?: () => void) {
+    on(elmentId: string, config: InputConfig) {
       const inputElement = document.getElementById(elmentId) as HTMLInputElement;
 
-      if (!elmentId || !changeCallback) {
+      if (!elmentId || !config || !config.onChange) {
         throw new Error('Element Id and changeCallback are required');
       }
 
@@ -135,17 +139,17 @@ export function teclado(options: TecladoOptions = {}) {
               headerText = value || '';
               header.innerText = headerText;
             }
-            changeCallback(value);
+            config.onChange(value);
           }
-        : changeCallback;
+        : config.onChange;
 
-      const onSubmit = submitCallback;
-
-      changeHandlers.set(elmentId, { onSubmit, onChange });
+      inputConfig.set(elmentId, { ...config, onChange });
 
       const listener = () => {
-        focusedElementId = inputElement.id;
-        showKeyboard();
+        if (focusedElementId !== inputElement.id) {
+          focusedElementId = inputElement.id;
+          showKeyboard();
+        }
       };
 
       inputElement.removeEventListener('focus', listener);
@@ -153,7 +157,7 @@ export function teclado(options: TecladoOptions = {}) {
 
       const unsubscribe = () => {
         inputElement.removeEventListener('focus', listener);
-        changeHandlers.delete(elmentId);
+        inputConfig.delete(elmentId);
       };
 
       return unsubscribe;
@@ -164,6 +168,7 @@ export function teclado(options: TecladoOptions = {}) {
 function showKeyboard() {
   const keyboard = document.getElementById(KEYBOARD_ID);
   if (keyboard) {
+    keyboardType = inputConfig.get(focusedElementId)?.keyboardType || 'alphabet';
     keyboard.appendChild(buildContent());
     keyboard.style.display = 'block';
     keyboard.style.transform = 'translateY(0)';
@@ -222,13 +227,13 @@ function onKeyDownListener(event: KeyboardEvent) {
   if (input) {
     switch (event.key) {
       case 'Backspace':
-        changeHandlers.get(focusedElementId)?.onChange(input.value.slice(0, -1));
+        inputConfig.get(focusedElementId)?.onChange(input.value.slice(0, -1));
         break;
       case 'Delete':
-        changeHandlers.get(focusedElementId)?.onChange('');
+        inputConfig.get(focusedElementId)?.onChange('');
         break;
       case 'Enter':
-        changeHandlers.get(focusedElementId)?.onSubmit?.();
+        inputConfig.get(focusedElementId)?.onSubmit?.();
       case 'Escape':
         input.blur();
         hideKeyboard();
@@ -242,7 +247,7 @@ function onKeyDownListener(event: KeyboardEvent) {
         break;
       default:
         const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
-        changeHandlers.get(focusedElementId)?.onChange(input.value + keyValue);
+        inputConfig.get(focusedElementId)?.onChange(input.value + keyValue);
         break;
     }
   }
@@ -275,6 +280,12 @@ function buildContent() {
 
   if (customOptions?.withHeader) {
     // Header
+
+    const input = document.getElementById(focusedElementId) as HTMLInputElement;
+    if (input) {
+      headerText = input.value || '';
+    }
+
     const header = document.createElement('div');
     header.id = `${KEYBOARD_ID}-header`;
     header.style.display = 'flex';
