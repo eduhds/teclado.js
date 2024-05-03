@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "rm -rf node_modules && rm -rf .pnpm-store && rm -rf lib",
     "tsc": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
-    "minify": "esbuild lib/esm/index.js --bundle --minify --outfile=teclado.min.js",
+    "minify": "esbuild lib/esm/index.js --bundle --minify --platform=neutral --outfile=teclado.min.js",
     "prepublishOnly": "pnpm run tsc",
     "test": "jest",
     "docs": "echo 'todo docs'",
