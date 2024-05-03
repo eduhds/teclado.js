@@ -1,11 +1,11 @@
-type Preset = Array<Array<string>>;
+export type KeyboardPreset = Array<Array<string | string[]>>;
 export type KeyboardType = keyof typeof presets;
-type InputConfig = {
+export type InputConfig = {
     keyboardType?: KeyboardType;
     onChange: (value?: string) => void;
     onSubmit?: () => void;
 };
-type TecladoOptions = {
+export type TecladoOptions = {
     contentClass?: string;
     keyClass?: string;
     keySymbols?: {
@@ -14,7 +14,7 @@ type TecladoOptions = {
         Shift?: string;
         Tab?: string;
     };
-    preset?: Preset;
+    preset?: KeyboardPreset;
     disablePhisicalKeyboard?: boolean;
     theme?: 'light' | 'dark';
     withHeader?: boolean;
@@ -28,10 +28,8 @@ declare let presets: {
 export declare function teclado(options?: TecladoOptions): {
     showKeyboard: typeof showKeyboard;
     hideKeyboard: typeof hideKeyboard;
-    setKeyboardType: typeof setKeyboardType;
-    on(elmentId: string, config: InputConfig): () => void;
+    on(inputId: string, config: InputConfig): () => void;
 };
 declare function showKeyboard(): void;
 declare function hideKeyboard(): void;
-declare function setKeyboardType(type: KeyboardType): void;
 export {};
