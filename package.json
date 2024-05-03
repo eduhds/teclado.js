@@ -13,7 +13,7 @@
     "minify": "esbuild lib/esm/index.js --bundle --minify --outfile=teclado.min.js",
     "prepublishOnly": "pnpm run tsc",
     "test": "jest",
-    "docs": "typedoc --out docs src",
+    "docs": "echo 'todo docs'",
     "build": "pnpm run tsc && pnpm run minify && pnpm run size && pnpm run docs",
     "release": "pnpm run build && npx changelogen --output --bump",
     "size": "size-limit",
