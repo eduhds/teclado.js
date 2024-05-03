@@ -7,7 +7,9 @@ import {
   numericPreset,
   numpadPreset,
   symbolPreset,
-  findKey
+  findKey,
+  emailPreset,
+  DOTCOM_KEY
 } from './presets.js';
 
 export type KeyboardPreset = Array<Array<string | string[]>>;
@@ -57,7 +59,8 @@ let presets = {
   default: defaultPreset,
   numeric: numericPreset,
   numpad: numpadPreset,
-  symbol: symbolPreset
+  symbol: symbolPreset,
+  email: emailPreset
 };
 
 let customOptions: TecladoOptions;
@@ -140,7 +143,8 @@ export function teclado(options: TecladoOptions = {}) {
             const header = document.getElementById(`${KEYBOARD_ID}-header`);
             if (header) {
               headerText = value || '';
-              header.innerText = headerText;
+              header.innerText =
+                inputElement.type === 'password' ? secureText(headerText) : headerText;
             }
             config.onChange(value);
           }
@@ -292,7 +296,7 @@ function buildContent() {
     header.style.alignItems = 'center';
     header.style.fontSize = '1rem';
     header.style.height = '1.5rem';
-    header.innerText = headerText;
+    header.innerText = input?.type === 'password' ? secureText(headerText) : headerText;
 
     if (customOptions.theme === 'dark') {
       header.style.color = '#fff';
@@ -301,6 +305,12 @@ function buildContent() {
     }
 
     content.appendChild(header);
+  }
+
+  if (!customOptions.preset && keyboardType === 'default') {
+    if ((document.getElementById(focusedInputId) as HTMLInputElement)?.type === 'email') {
+      keyboardType = 'email';
+    }
   }
 
   const keyboardPreset = presets[keyboardType];
@@ -458,7 +468,7 @@ function buildContent() {
         key === 'Backspace' ||
         key === 'Enter' ||
         key === 'Shift' ||
-        [ALPHABET_KEY, NUMERIC_KEY, SYMBOL_KEY, NUMPAD_KEY].includes(key)
+        [ALPHABET_KEY, NUMERIC_KEY, SYMBOL_KEY, NUMPAD_KEY, DOTCOM_KEY].includes(key)
       ) {
         button.style.width = '6rem';
         // @ts-ignore
@@ -541,4 +551,8 @@ function buildContent() {
   }
 
   return content;
+}
+
+function secureText(text: string) {
+  return Array.from({ length: text.length }, () => '*').join('');
 }
