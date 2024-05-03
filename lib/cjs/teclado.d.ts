@@ -24,6 +24,7 @@ declare let presets: {
     numeric: string[][][];
     numpad: string[][][];
     symbol: string[][][];
+    email: string[][][];
 };
 export declare function teclado(options?: TecladoOptions): {
     showKeyboard: typeof showKeyboard;
