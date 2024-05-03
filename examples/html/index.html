@@ -30,7 +30,7 @@
           Shift: '⇧'
         },
         preset: [
-          ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+          ['q', 'w', ['e', 'é', 'ê'], 'r', 't', 'y', ['u', 'ú'], 'i', 'o', 'p'],
           [['a', 'á', 'à', 'â', 'ã'], 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ç'],
           ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
           ['Numeric', ',', ' ', '.', 'Enter']
@@ -49,7 +49,7 @@
       }
 
       start('name');
-      start('email', 'alphabet');
+      start('email', 'default');
       start('age', 'numpad');
       start('password', 'symbol');
     </script>

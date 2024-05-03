@@ -3,7 +3,7 @@ import {
   NUMPAD_KEY,
   NUMERIC_KEY,
   SYMBOL_KEY,
-  alphabetPreset,
+  defaultPreset,
   numericPreset,
   numpadPreset,
   symbolPreset,
@@ -54,7 +54,7 @@ const ALLOWED_INPUT_TYPES = [
 ];
 
 let presets = {
-  alphabet: alphabetPreset,
+  default: defaultPreset,
   numeric: numericPreset,
   numpad: numpadPreset,
   symbol: symbolPreset
@@ -62,7 +62,7 @@ let presets = {
 
 let customOptions: TecladoOptions;
 let inputConfig: Map<string, InputConfig> = new Map();
-let keyboardType: KeyboardType = 'alphabet';
+let keyboardType: KeyboardType = 'default';
 let focusedInputId: string;
 let keyClicked = false;
 let shiftKey = false;
@@ -74,9 +74,11 @@ let keyVariants: string[] | undefined;
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
     if (typeof options.preset === 'object') {
-      presets.alphabet = options.preset
+      presets.default = options.preset
         .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
-        .map(line => line.map(k => (typeof k === 'string' ? findKey(k) : k)));
+        .map(line =>
+          line.map(k => (typeof k === 'string' ? findKey(k) : [k[0], k[0], ...k.slice(1)]))
+        );
     }
     customOptions = options;
   }
@@ -169,7 +171,7 @@ export function teclado(options: TecladoOptions = {}) {
 function showKeyboard() {
   const keyboard = document.getElementById(KEYBOARD_ID);
   if (keyboard) {
-    keyboardType = inputConfig.get(focusedInputId)?.keyboardType || 'alphabet';
+    keyboardType = inputConfig.get(focusedInputId)?.keyboardType || 'default';
     keyboard.appendChild(buildContent());
     keyboard.style.display = 'block';
     keyboard.style.transform = 'translateY(0)';
@@ -187,7 +189,8 @@ function hideKeyboard() {
   focusedInputId = '';
   headerText = '';
   shiftKey = false;
-  keyboardType = 'alphabet';
+  keyboardType = 'default';
+  keyVariants = undefined;
 }
 
 function onClickListener(event: MouseEvent) {
@@ -355,7 +358,7 @@ function buildContent() {
         if (rest?.length) {
           longClickTimeout = setTimeout(() => {
             isLongClick = true;
-            keyVariants = [code, ...rest];
+            keyVariants = [...rest];
 
             // Variants container
             const variantsContainer = document.createElement('div');
@@ -496,7 +499,7 @@ function buildContent() {
       }
 
       button.addEventListener('click', e => {
-        if (rest?.length) {
+        if (keyVariants?.length) {
           e.stopPropagation();
           return;
         }
@@ -509,7 +512,7 @@ function buildContent() {
               ? 'numpad'
               : key === SYMBOL_KEY
               ? 'symbol'
-              : 'alphabet';
+              : 'default';
 
           const keyboard = document.getElementById(KEYBOARD_ID);
 

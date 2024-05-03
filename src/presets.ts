@@ -116,7 +116,7 @@ export const SYMBOL_KEY = '=/<';
 
 export const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n.toLowerCase()) || [n, n];
 
-export const alphabetPreset = [
+export const defaultPreset = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
   ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
