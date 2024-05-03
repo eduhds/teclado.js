@@ -20,7 +20,7 @@ export type TecladoOptions = {
     withHeader?: boolean;
 };
 declare let presets: {
-    alphabet: string[][][];
+    default: string[][][];
     numeric: string[][][];
     numpad: string[][][];
     symbol: string[][][];
