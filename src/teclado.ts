@@ -10,17 +10,17 @@ import {
   findKey
 } from './presets.js';
 
-type Preset = Array<Array<string>>;
+export type KeyboardPreset = Array<Array<string | string[]>>;
 
 export type KeyboardType = keyof typeof presets;
 
-type InputConfig = {
+export type InputConfig = {
   keyboardType?: KeyboardType;
   onChange: (value?: string) => void;
   onSubmit?: () => void;
 };
 
-type TecladoOptions = {
+export type TecladoOptions = {
   contentClass?: string;
   keyClass?: string;
   keySymbols?: {
@@ -29,7 +29,7 @@ type TecladoOptions = {
     Shift?: string;
     Tab?: string;
   };
-  preset?: Preset;
+  preset?: KeyboardPreset;
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
   withHeader?: boolean;
@@ -60,22 +60,24 @@ let presets = {
   symbol: symbolPreset
 };
 
-let focusedElementId: string;
-let inputConfig: Map<string, InputConfig> = new Map();
-let keyClicked = false;
-let shiftKeyOn = false;
 let customOptions: TecladoOptions;
-let headerText = '';
+let inputConfig: Map<string, InputConfig> = new Map();
 let keyboardType: KeyboardType = 'alphabet';
+let focusedInputId: string;
+let keyClicked = false;
+let shiftKey = false;
+let headerText = '';
+let isLongClick = false;
+let longClickTimeout: number;
+let keyVariants: string[] | undefined;
 
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
     if (typeof options.preset === 'object') {
       presets.alphabet = options.preset
         .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
-        .map(line => line.map(findKey));
+        .map(line => line.map(k => (typeof k === 'string' ? findKey(k) : k)));
     }
-
     customOptions = options;
   }
 
@@ -120,13 +122,12 @@ export function teclado(options: TecladoOptions = {}) {
   return {
     showKeyboard,
     hideKeyboard,
-    setKeyboardType,
-    on(elmentId: string, config: InputConfig) {
-      const inputElement = document.getElementById(elmentId) as HTMLInputElement;
-
-      if (!elmentId || !config || !config.onChange) {
+    on(inputId: string, config: InputConfig) {
+      if (!inputId || !config || !config.onChange) {
         throw new Error('Element Id and changeCallback are required');
       }
+
+      const inputElement = document.getElementById(inputId) as HTMLInputElement;
 
       if (!inputElement || !ALLOWED_INPUT_TYPES.includes(inputElement.type)) {
         throw new Error('Element not found or not supported, check if Id and type is correct');
@@ -143,11 +144,11 @@ export function teclado(options: TecladoOptions = {}) {
           }
         : config.onChange;
 
-      inputConfig.set(elmentId, { ...config, onChange });
+      inputConfig.set(inputId, { ...config, onChange });
 
       const listener = () => {
-        if (focusedElementId !== inputElement.id) {
-          focusedElementId = inputElement.id;
+        if (focusedInputId !== inputElement.id) {
+          focusedInputId = inputElement.id;
           showKeyboard();
         }
       };
@@ -157,7 +158,7 @@ export function teclado(options: TecladoOptions = {}) {
 
       const unsubscribe = () => {
         inputElement.removeEventListener('focus', listener);
-        inputConfig.delete(elmentId);
+        inputConfig.delete(inputId);
       };
 
       return unsubscribe;
@@ -168,7 +169,7 @@ export function teclado(options: TecladoOptions = {}) {
 function showKeyboard() {
   const keyboard = document.getElementById(KEYBOARD_ID);
   if (keyboard) {
-    keyboardType = inputConfig.get(focusedElementId)?.keyboardType || 'alphabet';
+    keyboardType = inputConfig.get(focusedInputId)?.keyboardType || 'alphabet';
     keyboard.appendChild(buildContent());
     keyboard.style.display = 'block';
     keyboard.style.transform = 'translateY(0)';
@@ -183,23 +184,15 @@ function hideKeyboard() {
       keyboard.style.display = 'none';
     }, 300);
   }
-  focusedElementId = '';
+  focusedInputId = '';
   headerText = '';
-  shiftKeyOn = false;
+  shiftKey = false;
   keyboardType = 'alphabet';
-}
-
-function setKeyboardType(type: KeyboardType) {
-  if (type in presets) {
-    keyboardType = type;
-    return;
-  }
-  throw new Error('Invalid keyboard type');
 }
 
 function onClickListener(event: MouseEvent) {
   const keyboard = document.getElementById(KEYBOARD_ID);
-  const input = document.getElementById(focusedElementId);
+  const input = document.getElementById(focusedInputId);
 
   if (keyboard && input) {
     const isClickInsideInput = input?.contains(event.target as HTMLElement);
@@ -222,35 +215,36 @@ function onKeyDownListener(event: KeyboardEvent) {
     return;
   }
 
-  const input = document.getElementById(focusedElementId) as HTMLInputElement;
+  const input = document.getElementById(focusedInputId) as HTMLInputElement;
 
   if (input) {
     switch (event.key) {
       case 'Backspace':
-        inputConfig.get(focusedElementId)?.onChange(input.value.slice(0, -1));
+        inputConfig.get(focusedInputId)?.onChange(input.value.slice(0, -1));
         break;
       case 'Delete':
-        inputConfig.get(focusedElementId)?.onChange('');
+        inputConfig.get(focusedInputId)?.onChange('');
         break;
       case 'Enter':
-        inputConfig.get(focusedElementId)?.onSubmit?.();
+        inputConfig.get(focusedInputId)?.onSubmit?.();
       case 'Escape':
         input.blur();
         hideKeyboard();
         break;
       case 'Shift':
-        shiftKeyOn = !shiftKeyOn;
+        shiftKey = !shiftKey;
         const keyboard = document.getElementById(KEYBOARD_ID);
         if (keyboard) {
           keyboard.appendChild(buildContent());
         }
         break;
       default:
-        const keyValue = shiftKeyOn ? event.key.toUpperCase() : event.key;
-        inputConfig.get(focusedElementId)?.onChange(input.value + keyValue);
+        const keyValue = shiftKey ? event.key.toUpperCase() : event.key;
+        inputConfig.get(focusedInputId)?.onChange(input.value + keyValue);
         break;
     }
   }
+  // Voltar para false para permitir entrada do teclado fśisico
   keyClicked = false;
 }
 
@@ -281,7 +275,7 @@ function buildContent() {
   if (customOptions?.withHeader) {
     // Header
 
-    const input = document.getElementById(focusedElementId) as HTMLInputElement;
+    const input = document.getElementById(focusedInputId) as HTMLInputElement;
     if (input) {
       headerText = input.value || '';
     }
@@ -317,7 +311,7 @@ function buildContent() {
     line.style.paddingLeft = '10px';
     line.style.paddingRight = '10px';
 
-    for (const [key, code] of lineKeys) {
+    for (const [key, code, ...rest] of lineKeys) {
       // Button element
       const buttonId = `${KEYBOARD_ID}-button-${key}`;
 
@@ -334,33 +328,115 @@ function buildContent() {
       button.style.justifyContent = 'center';
       button.style.cursor = 'pointer';
 
+      let boxShadow: string;
+      let boxShadowOnClick: string;
+
       if (customOptions.theme === 'dark') {
+        boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
+        boxShadowOnClick = '0 4px 8px rgba(255, 255, 255, 0.4)';
         button.style.background = '#333';
         button.style.color = '#fff';
         button.style.border = '1px solid #666';
-
-        button.style.boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
+        button.style.boxShadow = boxShadow;
         button.style.transition = 'box-shadow 0.3s ease';
-        button.addEventListener('mousedown', () => {
-          button.style.boxShadow = '0 4px 8px rgba(255, 255, 255, 0.4)';
-        });
-        button.addEventListener('mouseup', () => {
-          button.style.boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
-        });
       } else {
+        boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        boxShadowOnClick = '0 4px 8px rgba(0, 0, 0, 0.4)';
         button.style.background = '#fff';
         button.style.color = '#000';
         button.style.border = '1px solid #ccc';
-
-        button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        button.style.boxShadow = boxShadow;
         button.style.transition = 'box-shadow 0.3s ease';
-        button.addEventListener('mousedown', () => {
-          button.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.4)';
-        });
-        button.addEventListener('mouseup', () => {
-          button.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-        });
       }
+
+      button.addEventListener('mousedown', () => {
+        button.style.boxShadow = boxShadowOnClick;
+
+        if (rest?.length) {
+          longClickTimeout = setTimeout(() => {
+            isLongClick = true;
+            keyVariants = [code, ...rest];
+
+            // Variants container
+            const variantsContainer = document.createElement('div');
+            variantsContainer.style.position = 'absolute';
+            variantsContainer.style.top = '0';
+            variantsContainer.style.left = '0';
+            variantsContainer.style.width = '100%';
+            variantsContainer.style.height = '100%';
+            variantsContainer.style.zIndex = '9999';
+            variantsContainer.style.display = 'flex';
+            variantsContainer.style.justifyContent = 'center';
+            variantsContainer.style.alignItems = 'center';
+            variantsContainer.style.flexWrap = 'wrap';
+            variantsContainer.style.gap = '10px';
+
+            if (customOptions.theme === 'dark') {
+              variantsContainer.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
+            } else {
+              variantsContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+            }
+
+            for (const variant of keyVariants) {
+              // Variant key button
+              const variantButton = document.createElement('button');
+              variantButton.innerText = shiftKey ? variant.toUpperCase() : variant;
+              variantButton.style.width = '3rem';
+              variantButton.style.height = '3rem';
+              variantButton.style.fontSize = '1.5rem';
+              variantButton.style.borderRadius = '5px';
+              variantButton.style.display = 'flex';
+              variantButton.style.alignItems = 'center';
+              variantButton.style.justifyContent = 'center';
+              variantButton.style.cursor = 'pointer';
+
+              if (customOptions.theme === 'dark') {
+                variantButton.style.background = '#333';
+                variantButton.style.color = '#fff';
+                variantButton.style.border = '1px solid #666';
+              } else {
+                variantButton.style.background = '#fff';
+                variantButton.style.color = '#000';
+                variantButton.style.border = '1px solid #ccc';
+              }
+
+              variantButton.addEventListener('click', e => {
+                const input = document.getElementById(focusedInputId);
+                input?.focus();
+
+                const event = new KeyboardEvent('keydown', {
+                  key: variant,
+                  code: variant,
+                  shiftKey
+                });
+
+                keyClicked = true;
+                keyVariants = undefined;
+
+                document.dispatchEvent(event);
+                e.stopPropagation();
+
+                variantsContainer.parentElement?.removeChild(variantsContainer);
+              });
+
+              variantsContainer.appendChild(variantButton);
+            }
+
+            button.appendChild(variantsContainer);
+          }, 500);
+        }
+      });
+
+      button.addEventListener('mouseup', e => {
+        button.style.boxShadow = boxShadow;
+
+        clearTimeout(longClickTimeout);
+        if (isLongClick) {
+          // Prevent the default action for the long click event
+          e.preventDefault();
+        }
+        isLongClick = false;
+      });
 
       let keyValue = key === NUMPAD_KEY ? key.slice(0, 2) + '</br>' + key.slice(2, 4) : key;
 
@@ -369,7 +445,7 @@ function buildContent() {
         keyValue = customOptions.keySymbols[key] || key;
       }
 
-      if (shiftKeyOn) {
+      if (shiftKey) {
         keyValue = keyValue.toUpperCase();
       }
 
@@ -393,7 +469,7 @@ function buildContent() {
       }
 
       if (key === 'Shift') {
-        if (shiftKeyOn) {
+        if (shiftKey) {
           button.style.position = 'relative';
           const dotIndicator = document.createElement('div');
 
@@ -420,6 +496,11 @@ function buildContent() {
       }
 
       button.addEventListener('click', e => {
+        if (rest?.length) {
+          e.stopPropagation();
+          return;
+        }
+
         if ([NUMERIC_KEY, NUMPAD_KEY, SYMBOL_KEY, ALPHABET_KEY].includes(key)) {
           keyboardType =
             key === NUMERIC_KEY
@@ -440,14 +521,10 @@ function buildContent() {
           return;
         }
 
-        const input = document.getElementById(focusedElementId);
+        const input = document.getElementById(focusedInputId);
         input?.focus();
 
-        const event = new KeyboardEvent('keydown', {
-          key,
-          code,
-          shiftKey: shiftKeyOn
-        });
+        const event = new KeyboardEvent('keydown', { key, code, shiftKey });
 
         keyClicked = true;
         document.dispatchEvent(event);

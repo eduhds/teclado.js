@@ -114,7 +114,7 @@ export const NUMERIC_KEY = '?123';
 export const NUMPAD_KEY = '1234';
 export const SYMBOL_KEY = '=/<';
 
-export const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n) || [n, n];
+export const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n.toLowerCase()) || [n, n];
 
 export const alphabetPreset = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
