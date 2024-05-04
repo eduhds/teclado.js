@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/eduhds/teclado.js/issues"
   },
-  "homepage": "https://github.com/eduhds/teclado.js#readme",
+  "homepage": "https://eduhds.github.io/teclado.js",
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/preset-env": "^7.23.7",
