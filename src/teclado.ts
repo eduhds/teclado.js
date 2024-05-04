@@ -79,9 +79,7 @@ export function teclado(options: TecladoOptions = {}) {
     if (typeof options.preset === 'object') {
       presets.default = options.preset
         .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
-        .map(line =>
-          line.map(k => (typeof k === 'string' ? findKey(k) : [k[0], k[0], ...k.slice(1)]))
-        );
+        .map(line => line.map(findKey));
     }
     customOptions = options;
   }

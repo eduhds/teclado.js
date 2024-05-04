@@ -109,6 +109,22 @@ const KEYBOARD_KEYS = [
   ['_', 'Underscore']
 ];
 
+const A_VARIANTS = ['a', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ'];
+const C_VARIANTS = ['c', 'ç'];
+const D_VARIANTS = ['d', 'ð'];
+const E_VARIANTS = ['e', 'è', 'é', 'ê', 'ë'];
+const F_VARIANTS = ['f', 'ƒ'];
+const I_VARIANTS = ['i', 'ì', 'í', 'î', 'ï'];
+const N_VARIANTS = ['n', 'ñ'];
+const O_VARIANTS = ['o', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'œ'];
+const S_VARIANTS = ['s', 'š'];
+const U_VARIANTS = ['u', 'ù', 'ú', 'û', 'ü'];
+const Y_VARIANTS = ['y', 'ý', 'ÿ'];
+
+// Þ latin capital letter THORN
+// þ latin small letter thorn
+// ß latin small letter sharp s = ess-zed
+
 export const ALPHABET_KEY = 'ABC';
 export const NUMERIC_KEY = '?123';
 export const NUMPAD_KEY = '1234';
@@ -116,12 +132,15 @@ export const SYMBOL_KEY = '=/<';
 export const DOTCOM_KEY = '.com';
 export const SPACE_KEY = ' ';
 
-export const findKey = (n: string) => KEYBOARD_KEYS.find(k => k[1] === n.toLowerCase()) || [n, n];
+export const findKey = (n: string | string[]) => {
+  if (typeof n === 'string') return KEYBOARD_KEYS.find(k => k[1] === n.toLowerCase()) || [n, n];
+  return [n[0], n[0], ...n.slice(1)];
+};
 
 export const defaultPreset = [
-  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
+  ['q', 'w', E_VARIANTS, 'r', 't', Y_VARIANTS, U_VARIANTS, I_VARIANTS, O_VARIANTS, 'p'],
+  [A_VARIANTS, S_VARIANTS, D_VARIANTS, F_VARIANTS, 'g', 'h', 'j', 'k', 'l'],
+  ['Shift', 'z', 'x', C_VARIANTS, 'v', 'b', N_VARIANTS, 'm', 'Backspace'],
   [NUMERIC_KEY, ',', SPACE_KEY, '.', 'Enter']
 ].map(line => line.map(findKey));
 
