@@ -8,6 +8,10 @@
 
 Simple virtual keyboard inspired by mobile keyboards.
 
+- No external dependencies
+- Light-weight, ~4kb gzipped size
+- Written in TypeScript
+
 [Documentation](https://eduhds.github.io/teclado.js)
 
 ## Install

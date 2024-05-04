@@ -6,10 +6,6 @@
 ![PNPM](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 ![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
 
-Simple virtual keyboard inspired by mobile keyboards.
-
-[Documentation](https://eduhds.github.io/teclado.js)
-
 ## Install
 
 ```sh
