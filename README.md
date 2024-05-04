@@ -36,13 +36,13 @@ Default keyboard:
 <input type="text" id="inputId" />
 
 <script type="module">
-  import { teclado } from 'teclado.js';
+  import { teclado } from 'https://cdn.jsdelivr.net/npm/teclado.js/teclado.min.js';
 
   var kb = teclado();
 
   kb.on('inputId', {
     onChange: value => {
-      document.getElementById('inputId').value = val;
+      document.getElementById('inputId').value = value;
     }
   });
 </script>
