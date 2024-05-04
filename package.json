@@ -5,19 +5,21 @@
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
   "files": [
-    "lib/"
+    "lib/",
+    "teclado.min.js"
   ],
   "scripts": {
     "clean": "rm -rf node_modules && rm -rf .pnpm-store && rm -rf lib",
     "tsc": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "minify": "esbuild lib/esm/index.js --bundle --minify --platform=neutral --outfile=teclado.min.js",
-    "prepublishOnly": "pnpm run tsc",
+    "prepublishOnly": "pnpm run build",
     "test": "jest",
-    "docs": "echo 'todo docs'",
-    "build": "pnpm run tsc && pnpm run minify && pnpm run size && pnpm run docs",
+    "docs": "docsify serve ./docs",
+    "build": "pnpm run tsc && pnpm run minify && pnpm run size",
     "release": "pnpm run build && npx changelogen --output --bump",
     "size": "size-limit",
-    "gzip-size": "gzip-size teclado.min.js"
+    "gzip-size": "gzip-size teclado.min.js",
+    "publish": "pnpm run release && npm publish"
   },
   "teclado.js": {
     "type": "git",
