@@ -456,7 +456,7 @@ function buildContent() {
         keyValue = customOptions.keySymbols[key] || key;
       }
 
-      if (shiftKey) {
+      if (shiftKey && !['Backspace', 'Enter', 'Shift'].includes(key)) {
         keyValue = keyValue.toUpperCase();
       }
 
