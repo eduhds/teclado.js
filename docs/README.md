@@ -26,20 +26,18 @@ pnpm add teclado.js
 
 ## Usage
 
-Default keyboard:
-
 ```html
 <input type="text" id="inputId" />
+```
 
-<script type="module">
-  import { teclado } from 'https://cdn.jsdelivr.net/npm/teclado.js/teclado.min.js';
+```javascript
+import { teclado } from 'teclado.js';
 
-  var kb = teclado();
+var kb = teclado();
 
-  kb.on('inputId', {
-    onChange: value => {
-      document.getElementById('inputId').value = value;
-    }
-  });
-</script>
+kb.on('inputId', {
+  onChange: value => {
+    document.getElementById('inputId').value = value;
+  }
+});
 ```
