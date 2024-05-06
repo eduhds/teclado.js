@@ -12,14 +12,13 @@
     "clean": "rm -rf node_modules && rm -rf .pnpm-store && rm -rf lib",
     "tsc": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
     "minify": "esbuild lib/esm/index.js --bundle --minify --platform=neutral --outfile=teclado.min.js",
-    "prepublishOnly": "pnpm run build",
     "test": "jest",
     "docs": "docsify serve ./docs",
     "build": "pnpm run tsc && pnpm run minify && pnpm run size",
     "release": "npx changelogen --output --bump",
     "size": "size-limit",
     "gzip-size": "gzip-size teclado.min.js",
-    "publish": "pnpm run release && npm publish"
+    "publish": "pnpm run build && pnpm run release && npm publish"
   },
   "teclado.js": {
     "type": "git",
