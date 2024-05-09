@@ -1,19 +1,24 @@
 export type KeyboardTheme = {
+  // Container
   backgroundColor: string;
   textColor: string;
   borderColor: string;
+  // Variants Content
+  variantsBackgroundColor?: string;
 };
 
 export const lightTheme: KeyboardTheme = {
   backgroundColor: '#fff',
   textColor: '#000',
-  borderColor: '#ccc'
+  borderColor: '#ccc',
+  variantsBackgroundColor: 'rgba(255, 255, 255, 0.8)'
 };
 
 export const darkTheme: KeyboardTheme = {
   backgroundColor: '#333',
   textColor: '#fff',
-  borderColor: '#666'
+  borderColor: '#666',
+  variantsBackgroundColor: 'rgba(51, 51, 51, 0.8)'
 };
 
 export function containerDiv(id: string, theme: KeyboardTheme = lightTheme) {
@@ -98,4 +103,61 @@ export function keyButton(id: string) {
   button.style.cursor = 'pointer';
 
   return button;
+}
+
+export function variantsContentDiv(theme: KeyboardTheme = lightTheme) {
+  const variantsContent = document.createElement('div');
+
+  variantsContent.style.position = 'absolute';
+  variantsContent.style.top = '0';
+  variantsContent.style.left = '0';
+  variantsContent.style.width = '100%';
+  variantsContent.style.height = '100%';
+  variantsContent.style.zIndex = '9999';
+  variantsContent.style.display = 'flex';
+  variantsContent.style.justifyContent = 'center';
+  variantsContent.style.alignItems = 'center';
+  variantsContent.style.flexWrap = 'wrap';
+  variantsContent.style.gap = '10px';
+
+  if (theme.variantsBackgroundColor) {
+    variantsContent.style.backgroundColor = theme.variantsBackgroundColor;
+  }
+
+  return variantsContent;
+}
+
+export function variantKeyButton(theme: KeyboardTheme = lightTheme) {
+  const variantButton = document.createElement('button');
+
+  variantButton.style.width = '3rem';
+  variantButton.style.height = '3rem';
+  variantButton.style.fontSize = '1.5rem';
+  variantButton.style.borderRadius = '5px';
+  variantButton.style.display = 'flex';
+  variantButton.style.alignItems = 'center';
+  variantButton.style.justifyContent = 'center';
+  variantButton.style.cursor = 'pointer';
+
+  variantButton.style.background = theme.backgroundColor;
+  variantButton.style.color = theme.textColor;
+  variantButton.style.border = `1px solid ${theme.borderColor}`;
+
+  return variantButton;
+}
+
+export function dotIndicatorDiv(theme: KeyboardTheme = lightTheme) {
+  const dotIndicator = document.createElement('div');
+
+  dotIndicator.id = 'dot-indicator';
+  dotIndicator.style.width = '0.5rem';
+  dotIndicator.style.height = '0.5rem';
+  dotIndicator.style.borderRadius = '50%';
+  dotIndicator.style.position = 'absolute';
+  dotIndicator.style.top = '0.25rem';
+  dotIndicator.style.right = '0.25rem';
+
+  dotIndicator.style.backgroundColor = theme.textColor;
+
+  return dotIndicator;
 }

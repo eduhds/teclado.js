@@ -2,10 +2,13 @@ import {
   containerDiv,
   contentDiv,
   darkTheme,
+  dotIndicatorDiv,
   headerDiv,
   keyButton,
   lightTheme,
-  lineDiv
+  lineDiv,
+  variantKeyButton,
+  variantsContentDiv
 } from './elements.js';
 import {
   ALPHABET_KEY,
@@ -268,13 +271,12 @@ function buildContent() {
 
   if (customOptions?.withHeader) {
     // Header
+    const header = headerDiv(`${KEYBOARD_ID}-header`);
 
     const input = document.getElementById(focusedInputId) as HTMLInputElement;
     if (input) {
       headerText = input.value || '';
     }
-
-    const header = headerDiv(`${KEYBOARD_ID}-header`);
 
     header.innerText = input?.type === 'password' ? secureText(headerText) : headerText;
 
@@ -335,47 +337,13 @@ function buildContent() {
             keyVariants = [...rest];
 
             // Variants container
-            const variantsContainer = document.createElement('div');
-            variantsContainer.style.position = 'absolute';
-            variantsContainer.style.top = '0';
-            variantsContainer.style.left = '0';
-            variantsContainer.style.width = '100%';
-            variantsContainer.style.height = '100%';
-            variantsContainer.style.zIndex = '9999';
-            variantsContainer.style.display = 'flex';
-            variantsContainer.style.justifyContent = 'center';
-            variantsContainer.style.alignItems = 'center';
-            variantsContainer.style.flexWrap = 'wrap';
-            variantsContainer.style.gap = '10px';
-
-            if (customOptions.theme === 'dark') {
-              variantsContainer.style.backgroundColor = 'rgba(51, 51, 51, 0.8)';
-            } else {
-              variantsContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-            }
+            const variantsContainer = variantsContentDiv(keyboardTheme);
 
             for (const variant of keyVariants) {
               // Variant key button
-              const variantButton = document.createElement('button');
-              variantButton.innerText = shiftKey ? variant.toUpperCase() : variant;
-              variantButton.style.width = '3rem';
-              variantButton.style.height = '3rem';
-              variantButton.style.fontSize = '1.5rem';
-              variantButton.style.borderRadius = '5px';
-              variantButton.style.display = 'flex';
-              variantButton.style.alignItems = 'center';
-              variantButton.style.justifyContent = 'center';
-              variantButton.style.cursor = 'pointer';
+              const variantButton = variantKeyButton(keyboardTheme);
 
-              if (customOptions.theme === 'dark') {
-                variantButton.style.background = '#333';
-                variantButton.style.color = '#fff';
-                variantButton.style.border = '1px solid #666';
-              } else {
-                variantButton.style.background = '#fff';
-                variantButton.style.color = '#000';
-                variantButton.style.border = '1px solid #ccc';
-              }
+              variantButton.innerText = shiftKey ? variant.toUpperCase() : variant;
 
               variantButton.addEventListener('click', e => {
                 const input = document.getElementById(focusedInputId);
@@ -448,16 +416,8 @@ function buildContent() {
       if (key === 'Shift') {
         if (shiftKey) {
           button.style.position = 'relative';
-          const dotIndicator = document.createElement('div');
 
-          dotIndicator.id = 'dot-indicator';
-          dotIndicator.style.width = '0.5rem';
-          dotIndicator.style.height = '0.5rem';
-          dotIndicator.style.borderRadius = '50%';
-          dotIndicator.style.backgroundColor = customOptions.theme === 'dark' ? '#fff' : '#000';
-          dotIndicator.style.position = 'absolute';
-          dotIndicator.style.top = '0.25rem';
-          dotIndicator.style.right = '0.25rem';
+          const dotIndicator = dotIndicatorDiv(keyboardTheme);
 
           button.appendChild(dotIndicator);
         } else {
