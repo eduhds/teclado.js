@@ -6,14 +6,14 @@
 ![PNPM](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 ![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
 
-Simple virtual keyboard inspired by mobile keyboards.
-
 <p align="center">
   <img src="teclado.png" alt="Teclado" />
 </p>
 
+Simple virtual keyboard inspired by mobile keyboards.
+
 - No external dependencies
-- Light-weight, ~4kb gzipped size
+- Light-weight, <4kb gzipped size
 - Written in TypeScript
 
 [Documentation](https://eduhds.github.io/teclado.js)

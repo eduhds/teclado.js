@@ -41,3 +41,11 @@ kb.on('inputId', {
   }
 });
 ```
+
+## Options
+
+TODO
+
+## Examples
+
+TODO
