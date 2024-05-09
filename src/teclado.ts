@@ -1,4 +1,13 @@
 import {
+  containerDiv,
+  contentDiv,
+  darkTheme,
+  headerDiv,
+  keyButton,
+  lightTheme,
+  lineDiv
+} from './elements.js';
+import {
   ALPHABET_KEY,
   NUMPAD_KEY,
   NUMERIC_KEY,
@@ -11,6 +20,7 @@ import {
   emailPreset,
   DOTCOM_KEY
 } from './presets.js';
+import type { KeyboardTheme } from './elements.js';
 
 export type KeyboardPreset = Array<Array<string | string[]>>;
 
@@ -73,6 +83,7 @@ let headerText = '';
 let isLongClick = false;
 let longClickTimeout: number;
 let keyVariants: string[] | undefined;
+let keyboardTheme: KeyboardTheme = lightTheme;
 
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
@@ -81,7 +92,12 @@ export function teclado(options: TecladoOptions = {}) {
         .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
         .map(line => line.map(findKey));
     }
+
     customOptions = options;
+
+    if (customOptions.theme === 'dark') {
+      keyboardTheme = darkTheme;
+    }
   }
 
   const keyboard = document.getElementById(KEYBOARD_ID);
@@ -91,26 +107,7 @@ export function teclado(options: TecladoOptions = {}) {
   }
 
   // Container element
-  const container = document.createElement('div');
-  container.id = KEYBOARD_ID;
-  container.style.position = 'fixed';
-  container.style.bottom = '0px';
-  container.style.left = '0px';
-  container.style.right = '0px';
-  container.style.display = 'none';
-  container.style.zIndex = '9999';
-  container.style.width = '100%';
-  container.style.userSelect = 'none';
-
-  if (customOptions.theme === 'dark') {
-    container.style.background = '#333';
-    container.style.color = '#fff';
-    container.style.border = '1px solid #666';
-  } else {
-    container.style.background = '#fff';
-    container.style.color = '#000';
-    container.style.border = '1px solid #ccc';
-  }
+  const container = containerDiv(KEYBOARD_ID, keyboardTheme);
 
   container.appendChild(buildContent());
 
@@ -263,15 +260,7 @@ function buildContent() {
   }
 
   // Content element
-  const content = document.createElement('div');
-  content.id = contentId;
-  content.style.display = 'flex';
-  content.style.flexDirection = 'column';
-  content.style.justifyContent = 'center';
-  content.style.gap = '10px';
-  content.style.paddingTop = '10px';
-  content.style.paddingBottom = '10px';
-  content.style.width = '100%';
+  const content = contentDiv(contentId);
 
   if (customOptions?.contentClass) {
     content.className = customOptions.contentClass;
@@ -285,15 +274,8 @@ function buildContent() {
       headerText = input.value || '';
     }
 
-    const header = document.createElement('div');
-    header.id = `${KEYBOARD_ID}-header`;
-    header.style.display = 'flex';
-    header.style.paddingLeft = '10px';
-    header.style.paddingRight = '10px';
-    header.style.justifyContent = 'center';
-    header.style.alignItems = 'center';
-    header.style.fontSize = '1rem';
-    header.style.height = '1.5rem';
+    const header = headerDiv(`${KEYBOARD_ID}-header`);
+
     header.innerText = input?.type === 'password' ? secureText(headerText) : headerText;
 
     if (customOptions.theme === 'dark') {
@@ -315,29 +297,13 @@ function buildContent() {
 
   for (const lineKeys of keyboardPreset) {
     // Line element
-    const line = document.createElement('div');
-    line.style.display = 'flex';
-    line.style.gap = '6px';
-    line.style.justifyContent = 'center';
-    line.style.paddingLeft = '10px';
-    line.style.paddingRight = '10px';
+    const line = lineDiv();
 
     for (const [key, code, ...rest] of lineKeys) {
       // Button element
       const buttonId = `${KEYBOARD_ID}-button-${key}`;
 
-      const button = document.createElement('button');
-      button.id = buttonId;
-      button.style.width = '4rem';
-      button.style.height = '3rem';
-      button.style.fontSize = '1.5rem';
-      button.style.color = 'white';
-      button.style.backgroundColor = 'black';
-      button.style.borderRadius = '5px';
-      button.style.display = 'flex';
-      button.style.alignItems = 'center';
-      button.style.justifyContent = 'center';
-      button.style.cursor = 'pointer';
+      const button = keyButton(buttonId);
 
       let boxShadow: string;
       let boxShadowOnClick: string;
