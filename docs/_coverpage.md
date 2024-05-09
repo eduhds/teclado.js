@@ -5,7 +5,7 @@
 > Simple virtual keyboard inspired by mobile keyboards.
 
 - No external dependencies
-- Light-weight, ~4kb gzipped size
+- Light-weight, <4kb gzipped size
 - Written in TypeScript
 
 [GitHub](https://github.com/eduhds/teclado.js)
