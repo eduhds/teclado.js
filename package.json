@@ -4,6 +4,7 @@
   "description": "Simple virtual keyboard inspired by mobile keyboards.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
+  "browser": "./teclado.min.js",
   "files": [
     "lib/",
     "teclado.min.js"
@@ -20,12 +21,16 @@
     "gzip-size": "gzip-size teclado.min.js",
     "publish": "pnpm run build && pnpm run release && npm publish"
   },
-  "teclado.js": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/eduhds/teclado.js.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "keyboard",
+    "teclado",
+    "virtual"
+  ],
+  "author": "Eduardo H. da Silva <27dhiouz9@mozmail.com> (https://github.com/eduhds)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/eduhds/teclado.js/issues"
