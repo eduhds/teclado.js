@@ -90,7 +90,7 @@ let keyboardTheme: KeyboardTheme = lightTheme;
 
 export function teclado(options: TecladoOptions = {}) {
   if (!customOptions) {
-    if (typeof options.preset === 'object') {
+    if (options.preset) {
       presets.default = options.preset
         .map(line => line.map(k => (k === 'Numeric' ? NUMERIC_KEY : k)))
         .map(line => line.map(findKey));
