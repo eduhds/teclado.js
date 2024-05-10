@@ -48,6 +48,7 @@
     "esbuild": "^0.20.2",
     "gzip-size-cli": "^5.1.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "size-limit": "^11.1.2",
     "typedoc": "^0.25.6",
     "typescript": "^5.3.3"
