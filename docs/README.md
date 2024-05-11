@@ -6,25 +6,19 @@
 ![PNPM](https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220)
 ![Jest](https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white)
 
-## Install
+## 📦 Install
 
 ```sh
 npm i teclado.js
-```
 
-Or
-
-```sh
+# Or with yarn
 yarn add teclado.js
-```
 
-Or
-
-```sh
+# Or with pnpm
 pnpm add teclado.js
 ```
 
-## Usage
+## ⌨️ Basic Usage
 
 ```html
 <input type="text" id="inputId" />
@@ -33,19 +27,66 @@ pnpm add teclado.js
 ```javascript
 import { teclado } from 'teclado.js';
 
-var kb = teclado();
+var tcld = teclado();
 
-kb.on('inputId', {
+tcld.on('inputId', {
   onChange: value => {
     document.getElementById('inputId').value = value;
   }
 });
 ```
 
-## Options
+## 📚 API
+
+### Options
 
 TODO
 
-## Examples
+### Examples
 
-TODO
+#### Frameworks
+
+##### React
+
+```javascript
+import React from 'react';
+import {teclado} from 'teclado.js';
+
+const tcld = teclado();
+
+export function App() {
+  const [value, setValue] = React.useState('');
+
+  React.useEffect(() => {
+    tcld.on('inputId', {
+      onChange: val => setValue(val || '');
+    });
+  }, []);
+
+  return (
+    <input type='text' id='inputId' value={value} onChange={e => setValue(e.target.value)} />
+  );
+}
+```
+
+#### Recipes
+
+##### Custom symbols
+
+```javascript
+var tcld = teclado({
+  keySymbols: {
+    Backspace: '⌫',
+    Enter: '⏎',
+    Shift: '⇧'
+  }
+});
+```
+
+##### Change theme
+
+```javascript
+var tcld = teclado({
+  theme: 'dark' // or light
+});
+```
