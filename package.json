@@ -11,14 +11,17 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules && rm -rf .pnpm-store && rm -rf lib",
-    "tsc": "rm -rf lib && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "tsc:dev": "tsc -p tsconfig.json --watch --outDir example/js",
+    "tsc:dist": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "browsersync": "browser-sync start --server 'example' --files 'example' --port 2500",
+    "dev": "pnpm run tsc:dev & pnpm run browsersync",
     "minify": "esbuild lib/esm/index.js --bundle --minify --platform=neutral --outfile=teclado.min.js",
     "test": "jest",
     "docs": "docsify serve ./docs",
-    "build": "pnpm run tsc && pnpm run minify && pnpm run size",
-    "release": "npx changelogen --output --bump",
     "size": "size-limit",
     "gzip-size": "gzip-size teclado.min.js",
+    "build": "pnpm run tsc:dist && pnpm run minify && pnpm run size",
+    "release": "npx changelogen --output --bump",
     "publish": "pnpm run build && pnpm run release && npm publish"
   },
   "repository": {
