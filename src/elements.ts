@@ -58,20 +58,20 @@ export function contentDiv(id: string) {
   return content;
 }
 
-export function headerDiv(id: string) {
-  const header = document.createElement('div');
+export function panelDiv(id: string) {
+  const panel = document.createElement('div');
 
-  header.id = id;
+  panel.id = id;
 
-  header.style.display = 'flex';
-  header.style.paddingLeft = '10px';
-  header.style.paddingRight = '10px';
-  header.style.justifyContent = 'center';
-  header.style.alignItems = 'center';
-  header.style.fontSize = '1rem';
-  header.style.height = '1.5rem';
+  panel.style.display = 'flex';
+  panel.style.paddingLeft = '10px';
+  panel.style.paddingRight = '10px';
+  panel.style.justifyContent = 'center';
+  panel.style.alignItems = 'center';
+  panel.style.fontSize = '1rem';
+  panel.style.height = '1.5rem';
 
-  return header;
+  return panel;
 }
 
 export function lineDiv() {

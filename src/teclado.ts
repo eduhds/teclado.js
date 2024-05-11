@@ -3,7 +3,7 @@ import {
   contentDiv,
   darkTheme,
   dotIndicatorDiv,
-  headerDiv,
+  panelDiv,
   keyButton,
   lightTheme,
   lineDiv,
@@ -47,7 +47,7 @@ export type TecladoOptions = {
   preset?: KeyboardPreset;
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
-  withHeader?: boolean;
+  hidePanel?: boolean;
 };
 
 const KEYBOARD_ID = 'tecladojs-keyboard';
@@ -82,7 +82,7 @@ let keyboardType: KeyboardType = 'default';
 let focusedInputId: string;
 let keyClicked = false;
 let shiftKey = false;
-let headerText = '';
+let panelText = '';
 let isLongClick = false;
 let longClickTimeout: number;
 let keyVariants: string[] | undefined;
@@ -136,13 +136,13 @@ export function teclado(options: TecladoOptions = {}) {
         throw new Error('Element not found or not supported, check if Id and type is correct');
       }
 
-      const onChange = customOptions.withHeader
+      const onChange = !customOptions.hidePanel
         ? (value?: string) => {
-            const header = document.getElementById(`${KEYBOARD_ID}-header`);
-            if (header) {
-              headerText = value || '';
-              header.innerText =
-                inputElement.type === 'password' ? secureText(headerText) : headerText;
+            const panel = document.getElementById(`${KEYBOARD_ID}-panel`);
+            if (panel) {
+              panelText = value || '';
+              panel.innerText =
+                inputElement.type === 'password' ? secureText(panelText) : panelText;
             }
             config.onChange(value);
           }
@@ -189,7 +189,7 @@ function hideKeyboard() {
     }, 300);
   }
   focusedInputId = '';
-  headerText = '';
+  panelText = '';
   shiftKey = false;
   keyboardType = 'default';
   keyVariants = undefined;
@@ -269,24 +269,24 @@ function buildContent() {
     content.className = customOptions.contentClass;
   }
 
-  if (customOptions?.withHeader) {
-    // Header
-    const header = headerDiv(`${KEYBOARD_ID}-header`);
+  if (!customOptions?.hidePanel) {
+    // Panel
+    const panel = panelDiv(`${KEYBOARD_ID}-panel`);
 
     const input = document.getElementById(focusedInputId) as HTMLInputElement;
     if (input) {
-      headerText = input.value || '';
+      panelText = input.value || '';
     }
 
-    header.innerText = input?.type === 'password' ? secureText(headerText) : headerText;
+    panel.innerText = input?.type === 'password' ? secureText(panelText) : panelText;
 
     if (customOptions.theme === 'dark') {
-      header.style.color = '#fff';
+      panel.style.color = '#fff';
     } else {
-      header.style.color = '#000';
+      panel.style.color = '#000';
     }
 
-    content.appendChild(header);
+    content.appendChild(panel);
   }
 
   if (!customOptions.preset && keyboardType === 'default') {
