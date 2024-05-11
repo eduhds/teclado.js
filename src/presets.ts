@@ -167,8 +167,8 @@ export const symbolPreset = [
 ].map(line => line.map(findKey));
 
 export const emailPreset = [
-  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-  ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'Backspace'],
+  defaultPreset[0],
+  defaultPreset[1],
+  defaultPreset[2],
   [NUMERIC_KEY, '@', DOTCOM_KEY, SPACE_KEY, '.', 'Enter']
 ].map(line => line.map(findKey));
