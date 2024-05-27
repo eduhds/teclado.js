@@ -5,20 +5,27 @@ export type KeyboardTheme = {
   borderColor: string;
   // Variants Content
   variantsBackgroundColor?: string;
+  // Keys
+  keyBoxShadowColor?: string;
+  keyBoxShadowColorOn?: string;
 };
 
 export const lightTheme: KeyboardTheme = {
   backgroundColor: '#fff',
   textColor: '#000',
   borderColor: '#ccc',
-  variantsBackgroundColor: 'rgba(255, 255, 255, 0.8)'
+  variantsBackgroundColor: 'rgba(255, 255, 255, 0.8)',
+  keyBoxShadowColor: 'rgba(0, 0, 0, 0.2)',
+  keyBoxShadowColorOn: 'rgba(0, 0, 0, 0.4)'
 };
 
 export const darkTheme: KeyboardTheme = {
   backgroundColor: '#333',
   textColor: '#fff',
   borderColor: '#666',
-  variantsBackgroundColor: 'rgba(51, 51, 51, 0.8)'
+  variantsBackgroundColor: 'rgba(51, 51, 51, 0.8)',
+  keyBoxShadowColor: 'rgba(255, 255, 255, 0.2)',
+  keyBoxShadowColorOn: 'rgba(255, 255, 255, 0.4)'
 };
 
 export function containerDiv(id: string, theme: KeyboardTheme = lightTheme) {
@@ -58,7 +65,7 @@ export function contentDiv(id: string) {
   return content;
 }
 
-export function panelDiv(id: string) {
+export function panelDiv(id: string, theme: KeyboardTheme = lightTheme) {
   const panel = document.createElement('div');
 
   panel.id = id;
@@ -70,6 +77,8 @@ export function panelDiv(id: string) {
   panel.style.alignItems = 'center';
   panel.style.fontSize = '1rem';
   panel.style.height = '1.5rem';
+
+  panel.style.color = theme.textColor;
 
   return panel;
 }
@@ -86,7 +95,7 @@ export function lineDiv() {
   return line;
 }
 
-export function keyButton(id: string) {
+export function keyButton(id: string, theme: KeyboardTheme = lightTheme) {
   const button = document.createElement('button');
 
   button.id = id;
@@ -94,13 +103,17 @@ export function keyButton(id: string) {
   button.style.width = '4rem';
   button.style.height = '3rem';
   button.style.fontSize = '1.5rem';
-  button.style.color = 'white';
-  button.style.backgroundColor = 'black';
   button.style.borderRadius = '5px';
   button.style.display = 'flex';
   button.style.alignItems = 'center';
   button.style.justifyContent = 'center';
   button.style.cursor = 'pointer';
+
+  button.style.background = theme.backgroundColor;
+  button.style.color = theme.textColor;
+  button.style.border = `1px solid ${theme.borderColor}`;
+  button.style.boxShadow = `0 2px 4px ${theme.keyBoxShadowColor}`;
+  button.style.transition = 'box-shadow 0.3s ease';
 
   return button;
 }

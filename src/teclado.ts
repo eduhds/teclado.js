@@ -271,7 +271,7 @@ function buildContent() {
 
   if (!customOptions?.hidePanel) {
     // Panel
-    const panel = panelDiv(`${KEYBOARD_ID}-panel`);
+    const panel = panelDiv(`${KEYBOARD_ID}-panel`, keyboardTheme);
 
     const input = document.getElementById(focusedInputId) as HTMLInputElement;
     if (input) {
@@ -279,12 +279,6 @@ function buildContent() {
     }
 
     panel.innerText = input?.type === 'password' ? secureText(panelText) : panelText;
-
-    if (customOptions.theme === 'dark') {
-      panel.style.color = '#fff';
-    } else {
-      panel.style.color = '#000';
-    }
 
     content.appendChild(panel);
   }
@@ -305,31 +299,10 @@ function buildContent() {
       // Button element
       const buttonId = `${KEYBOARD_ID}-button-${key}`;
 
-      const button = keyButton(buttonId);
-
-      let boxShadow: string;
-      let boxShadowOnClick: string;
-
-      if (customOptions.theme === 'dark') {
-        boxShadow = '0 2px 4px rgba(255, 255, 255, 0.2)';
-        boxShadowOnClick = '0 4px 8px rgba(255, 255, 255, 0.4)';
-        button.style.background = '#333';
-        button.style.color = '#fff';
-        button.style.border = '1px solid #666';
-        button.style.boxShadow = boxShadow;
-        button.style.transition = 'box-shadow 0.3s ease';
-      } else {
-        boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-        boxShadowOnClick = '0 4px 8px rgba(0, 0, 0, 0.4)';
-        button.style.background = '#fff';
-        button.style.color = '#000';
-        button.style.border = '1px solid #ccc';
-        button.style.boxShadow = boxShadow;
-        button.style.transition = 'box-shadow 0.3s ease';
-      }
+      const button = keyButton(buttonId, keyboardTheme);
 
       button.addEventListener('mousedown', () => {
-        button.style.boxShadow = boxShadowOnClick;
+        button.style.boxShadow = `0 4px 8px ${keyboardTheme.keyBoxShadowColorOn}`;
 
         if (rest?.length) {
           longClickTimeout = setTimeout(() => {
@@ -373,7 +346,7 @@ function buildContent() {
       });
 
       button.addEventListener('mouseup', e => {
-        button.style.boxShadow = boxShadow;
+        button.style.boxShadow = `0 2px 4px ${keyboardTheme.keyBoxShadowColor}`;
 
         clearTimeout(longClickTimeout);
         if (isLongClick) {
