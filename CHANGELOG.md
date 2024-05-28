@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.5
+
+[compare changes](https://github.com/eduhds/teclado.js/compare/0.0.4...v0.0.5)
+
+### 🩹 Fixes
+
+- Theme improvements ([25f5c65](https://github.com/eduhds/teclado.js/commit/25f5c65))
+
+### 📖 Documentation
+
+- Update version ([1b78abe](https://github.com/eduhds/teclado.js/commit/1b78abe))
+- Added Svelte example ([d557305](https://github.com/eduhds/teclado.js/commit/d557305))
+
+### ❤️ Contributors
+
+- Eduardo H. Da Silva ([@eduhds](http://github.com/eduhds))
+
 ## v0.0.4
 
 [compare changes](https://github.com/eduhds/teclado.js/compare/0.0.3...v0.0.4)

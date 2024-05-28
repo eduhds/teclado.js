@@ -1,6 +1,6 @@
 {
   "name": "teclado.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Simple virtual keyboard inspired by mobile keyboards.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
@@ -22,7 +22,7 @@
     "gzip-size": "gzip-size teclado.min.js",
     "build": "pnpm run tsc:dist && pnpm run minify && pnpm run size",
     "release": "npx changelogen --output --bump",
-    "publish": "pnpm run build && pnpm run release"
+    "prepublishOnly": "pnpm run build && pnpm run release"
   },
   "repository": {
     "type": "git",
