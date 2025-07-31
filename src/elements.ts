@@ -77,10 +77,40 @@ export function panelDiv(id: string, theme: KeyboardTheme = lightTheme) {
   panel.style.alignItems = 'center';
   panel.style.fontSize = '1rem';
   panel.style.height = '1.5rem';
+  panel.style.gap = '0.5rem';
 
   panel.style.color = theme.textColor;
 
   return panel;
+}
+
+export function panelButton(id: string, theme: KeyboardTheme = lightTheme) {
+  const button = document.createElement('button');
+
+  button.id = id;
+
+  button.style.padding = '5px';
+  button.style.fontSize = '0.8rem';
+  button.style.borderRadius = '5px';
+  button.style.cursor = 'pointer';
+
+  button.style.background = theme.backgroundColor;
+  button.style.color = theme.textColor;
+  button.style.border = `1px solid ${theme.borderColor}`;
+  button.style.boxShadow = `0 1px 2px ${theme.keyBoxShadowColor}`;
+  button.style.transition = 'box-shadow 0.3s ease';
+
+  return button;
+}
+
+export function panelDivider(theme: KeyboardTheme = lightTheme) {
+  const divider = document.createElement('div');
+
+  divider.style.height = '100%';
+  divider.style.width = '1px';
+  divider.style.backgroundColor = theme.borderColor;
+
+  return divider;
 }
 
 export function lineDiv() {

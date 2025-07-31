@@ -8,7 +8,9 @@ import {
   lightTheme,
   lineDiv,
   variantKeyButton,
-  variantsContentDiv
+  variantsContentDiv,
+  panelButton,
+  panelDivider
 } from './elements.js';
 import {
   ALPHABET_KEY,
@@ -31,6 +33,7 @@ export type KeyboardType = keyof typeof presets;
 
 export type InputConfig = {
   keyboardType?: KeyboardType;
+  suggestions?: string[];
   onChange: (value?: string) => void;
   onSubmit?: () => void;
 };
@@ -48,6 +51,7 @@ export type TecladoOptions = {
   disablePhisicalKeyboard?: boolean;
   theme?: 'light' | 'dark';
   hidePanel?: boolean;
+  suggestions?: string[];
 };
 
 const KEYBOARD_ID = 'tecladojs-keyboard';
@@ -138,12 +142,8 @@ export function teclado(options: TecladoOptions = {}) {
 
       const onChange = !customOptions.hidePanel
         ? (value?: string) => {
-            const panel = document.getElementById(`${KEYBOARD_ID}-panel`);
-            if (panel) {
-              panelText = value || '';
-              panel.innerText =
-                inputElement.type === 'password' ? secureText(panelText) : panelText;
-            }
+            panelText = value || '';
+            buildPanel(inputElement, config.suggestions);
             config.onChange(value);
           }
         : config.onChange;
@@ -271,16 +271,11 @@ function buildContent() {
 
   if (!customOptions?.hidePanel) {
     // Panel
-    const panel = panelDiv(`${KEYBOARD_ID}-panel`, keyboardTheme);
-
     const input = document.getElementById(focusedInputId) as HTMLInputElement;
     if (input) {
       panelText = input.value || '';
     }
-
-    panel.innerText = input?.type === 'password' ? secureText(panelText) : panelText;
-
-    content.appendChild(panel);
+    content.appendChild(buildPanel(input));
   }
 
   if (!customOptions.preset && keyboardType === 'default') {
@@ -448,6 +443,42 @@ function buildContent() {
   }
 
   return content;
+}
+
+function buildPanel(input: HTMLInputElement, suggestions?: string[]) {
+  let panel = document.getElementById(`${KEYBOARD_ID}-panel`);
+
+  if (panel) {
+    panel.innerHTML = '';
+  } else {
+    panel = panelDiv(`${KEYBOARD_ID}-panel`, keyboardTheme);
+  }
+
+  const typedText = document.createElement('span');
+  typedText.innerText = input?.type === 'password' ? secureText(panelText) : panelText;
+  panel.appendChild(typedText);
+
+  suggestions = suggestions || customOptions?.suggestions;
+
+  if (suggestions?.length) {
+    panel.appendChild(panelDivider(keyboardTheme));
+
+    for (const i in suggestions) {
+      const suggestion = suggestions[i];
+
+      const button = panelButton(`panel-button-${i}`, keyboardTheme);
+      button.innerText = suggestion;
+
+      button.addEventListener('click', e => {
+        inputConfig.get(focusedInputId)?.onChange(input.value + suggestion);
+        e.stopPropagation();
+      });
+
+      panel.appendChild(button);
+    }
+  }
+
+  return panel;
 }
 
 function secureText(text: string) {
