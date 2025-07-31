@@ -1,6 +1,6 @@
 ![logo](_media/icon.svg)
 
-# teclado.js <small>0.0.5</small>
+# teclado.js <small>v0.0.6</small>
 
 > Simple virtual keyboard inspired by mobile keyboards.
 
