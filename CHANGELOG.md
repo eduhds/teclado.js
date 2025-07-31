@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.0.6
+
+[compare changes](https://github.com/eduhds/teclado.js/compare/0.0.5...v0.0.6)
+
+### 🚀 Enhancements
+
+- Add suggestions buttons ([5c9e19e](https://github.com/eduhds/teclado.js/commit/5c9e19e))
+
+### 🏡 Chore
+
+- Update devcontainer config ([77c1f90](https://github.com/eduhds/teclado.js/commit/77c1f90))
+
+### ❤️ Contributors
+
+- Eduardo H. Da Silva ([@eduhds](http://github.com/eduhds))
+
 ## v0.0.5
 
 [compare changes](https://github.com/eduhds/teclado.js/compare/0.0.4...v0.0.5)

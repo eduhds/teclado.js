@@ -1,6 +1,6 @@
 {
   "name": "teclado.js",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Simple virtual keyboard inspired by mobile keyboards.",
   "main": "./lib/cjs/index.js",
   "module": "./lib/esm/index.js",
