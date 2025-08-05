@@ -34,7 +34,7 @@
     "virtual"
   ],
   "author": "Eduardo H. da Silva <27dhiouz9@mozmail.com> (https://github.com/eduhds)",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/eduhds/teclado.js/issues"
   },
