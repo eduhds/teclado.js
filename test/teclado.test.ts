@@ -52,3 +52,60 @@ test('Should input "@"', () => {
 
   expect(input.value).toBe('@');
 });
+
+test('Email keyboard should not have KeyQ variant on "q" key', () => {
+  jest.useFakeTimers();
+  const tcld = teclado();
+
+  const input = document.getElementById('inputEmail') as HTMLInputElement;
+
+  tcld.on('inputEmail', {
+    onChange: value => {
+      input.value = value || '';
+    }
+  });
+
+  input.focus();
+
+  const qButton = document.getElementById('tecladojs-keyboard-button-q') as HTMLButtonElement;
+  expect(qButton).toBeTruthy();
+
+  // Trigger mousedown to start long click timeout
+  qButton.dispatchEvent(new MouseEvent('mousedown'));
+
+  // Fast-forward time
+  jest.advanceTimersByTime(500);
+
+  // Check if variants container was created
+  const variants = qButton.querySelector('div');
+  expect(variants).toBeNull();
+
+  jest.useRealTimers();
+});
+
+test('Physical keyboard input should update the preview panel', () => {
+  const tcld = teclado();
+  const input = document.getElementById('inputText') as HTMLInputElement;
+
+  tcld.on('inputText', {
+    onChange: value => {
+      input.value = value || '';
+    }
+  });
+
+  input.value = '';
+  input.focus();
+
+  const panel = document.getElementById('tecladojs-keyboard-panel') as HTMLDivElement;
+  expect(panel).toBeTruthy();
+  expect(panel.querySelector('span')?.innerText).toBe('');
+
+  // Simulate physical input typing "Abc"
+  input.value = 'Abc';
+  input.dispatchEvent(new Event('input'));
+
+  // The panel span should update to "Abc"
+  expect(panel.querySelector('span')?.innerText).toBe('Abc');
+});
+
+

@@ -170,5 +170,6 @@ export const emailPreset = [
   defaultPreset[0],
   defaultPreset[1],
   defaultPreset[2],
-  [NUMERIC_KEY, '@', DOTCOM_KEY, SPACE_KEY, '.', 'Enter']
-].map(line => line.map(findKey));
+  [NUMERIC_KEY, '@', DOTCOM_KEY, SPACE_KEY, '.', 'Enter'].map(findKey)
+];
+

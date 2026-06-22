@@ -157,11 +157,23 @@ export function teclado(options: TecladoOptions = {}) {
         }
       };
 
+      const inputListener = () => {
+        if (focusedInputId === inputElement.id) {
+          panelText = inputElement.value || '';
+          buildPanel(inputElement, config.suggestions);
+          config.onChange(inputElement.value);
+        }
+      };
+
       inputElement.removeEventListener('focus', listener);
       inputElement.addEventListener('focus', listener);
 
+      inputElement.removeEventListener('input', inputListener);
+      inputElement.addEventListener('input', inputListener);
+
       const unsubscribe = () => {
         inputElement.removeEventListener('focus', listener);
+        inputElement.removeEventListener('input', inputListener);
         inputConfig.delete(inputId);
       };
 
@@ -232,6 +244,9 @@ function onKeyDownListener(event: KeyboardEvent) {
         break;
       case 'Enter':
         inputConfig.get(focusedInputId)?.onSubmit?.();
+        input.blur();
+        hideKeyboard();
+        break;
       case 'Escape':
         input.blur();
         hideKeyboard();
@@ -249,7 +264,7 @@ function onKeyDownListener(event: KeyboardEvent) {
         break;
     }
   }
-  // Voltar para false para permitir entrada do teclado fśisico
+  // Voltar para false para permitir entrada do teclado físico
   keyClicked = false;
 }
 
